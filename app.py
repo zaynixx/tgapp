@@ -24,31 +24,18 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 }
 
-# Создание базы данных и таблиц
+# Создание базы данных и таблиц (без таблицы logs)
 def init_db():
     conn = sqlite3.connect('user_activity.db')
     c = conn.cursor()
-    # Создание таблиц пользователей и логов
+    # Создание таблицы пользователей (без таблицы logs)
     c.execute('''
-        CREATE TABLE IF NOT EXISTS logs (
+        CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            action TEXT,
-            target TEXT,
-            timestamp TEXT
+            username TEXT,
+            password TEXT
         )
     ''')
-    conn.commit()
-    conn.close()
-
-# Логирование действий пользователя
-def add_log(action, site):
-    conn = sqlite3.connect('user_activity.db')
-    c = conn.cursor()
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    c.execute('''
-        INSERT INTO logs (action, target, timestamp)
-        VALUES (?, ?, ?)
-    ''', (action, site, timestamp))
     conn.commit()
     conn.close()
 
@@ -67,7 +54,6 @@ def search_tor():
     search_url = f"https://duckduckgo.com/?t=h_&q={query}&ia=web"
     try:
         response = requests.get(search_url, proxies=TOR_PROXY, headers=headers)
-        add_log('Search', query)
         return response.text
     except Exception as e:
         return f"Ошибка при подключении через TOR: {e}", 500
@@ -79,8 +65,6 @@ def redirect_vpn(target):
     if not url:
         return "Цель не найдена!", 404
 
-    add_log('Visit', target)
-
     try:
         if target == '2ip':
             response = requests.get(url, proxies=TOR_PROXY, headers=headers)
@@ -89,17 +73,6 @@ def redirect_vpn(target):
             return redirect(url)
     except Exception as e:
         return f"Ошибка при подключении через TOR: {e}", 500
-
-# Страница логов (опционально, если требуется)
-@app.route('/logs')
-def view_logs():
-    conn = sqlite3.connect('user_activity.db')
-    c = conn.cursor()
-    c.execute('SELECT * FROM logs')
-    logs = c.fetchall()
-    conn.close()
-
-    return render_template('logs.html', logs=logs)
 
 if __name__ == '__main__':
     init_db()
