@@ -79,7 +79,7 @@ def search_tor():
     if not query:
         return "Введите запрос для поиска!", 400
 
-    search_url = f"https://www.google.com/search?q={query}"
+    search_url = f"https://duckduckgo.com/?q={query}"
 
     try:
         response = requests.get(search_url, proxies=TOR_PROXY)
