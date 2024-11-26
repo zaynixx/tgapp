@@ -123,15 +123,12 @@ def search_tor():
     if not query:
         return "Введите запрос для поиска!", 400
 
-    search_url = f"https://duckduckgo.com/?q={query}"
-
+    search_url = f"https://www.qwant.com/?q={query}"  # Qwant URL для поиска
     try:
         response = requests.get(search_url, proxies=TOR_PROXY)
-        response.raise_for_status()  
         return response.text
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         return f"Ошибка при подключении через TOR: {e}", 500
-
 
 @app.route('/redirect/<target>')
 def redirect_vpn(target):
