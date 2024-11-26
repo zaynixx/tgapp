@@ -134,11 +134,19 @@ def search_tor():
 
     # Логируем URL для отладки
     print(f"Запрос на Qwant: {search_url}")
-    
+
     try:
         # Отправляем запрос через TOR
         response = requests.get(search_url, proxies=TOR_PROXY)
-        return response.text
+        
+        # Логируем полный ответ от Qwant
+        print(f"Ответ от Qwant: {response.status_code}, {response.text[:100]}...")
+
+        # Проверка на успешный ответ
+        if response.status_code == 200:
+            return response.text
+        else:
+            return f"Ошибка: {response.status_code}, {response.text[:200]}", 500
     except Exception as e:
         return f"Ошибка при подключении через TOR: {e}", 500
 
