@@ -1,6 +1,5 @@
 from flask import Flask, request, redirect, render_template, url_for, jsonify, flash
 import requests
-import sqlite3
 from datetime import datetime
 
 app = Flask(__name__)
@@ -23,21 +22,6 @@ VPN_TARGETS = {
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 }
-
-# Создание базы данных и таблиц (без таблицы logs)
-def init_db():
-    conn = sqlite3.connect('user_activity.db')
-    c = conn.cursor()
-    # Создание таблицы пользователей (без таблицы logs)
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT,
-            password TEXT
-        )
-    ''')
-    conn.commit()
-    conn.close()
 
 # Главная страница
 @app.route('/')
@@ -75,5 +59,4 @@ def redirect_vpn(target):
         return f"Ошибка при подключении через TOR: {e}", 500
 
 if __name__ == '__main__':
-    init_db()
     app.run(host='0.0.0.0', port=5000, debug=True)
