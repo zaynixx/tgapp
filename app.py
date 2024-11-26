@@ -76,14 +76,14 @@ def get_user_by_username(username):
     return user
 
 # Логирование действий (посещение сайтов и другие действия)
-def add_log(user_id, action, target=None):
+def add_log(user_id, site, action=None):
     conn = sqlite3.connect('user_activity.db')
     c = conn.cursor()
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     c.execute('''
-        INSERT INTO logs (user_id, action, target, timestamp)
+        INSERT INTO logs (user_id, site, timestamp, action)
         VALUES (?, ?, ?, ?)
-    ''', (user_id, action, target, timestamp))
+    ''', (user_id, site, timestamp, action))
     conn.commit()
     conn.close()
 
