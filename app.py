@@ -16,6 +16,11 @@ VPN_TARGETS = {
     "2ip": "https://2ip.ru"
 }
 
+# Заголовки для имитации браузера (чтобы избежать блокировок сайта)
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+}
+
 @app.route('/')
 def index():
     return '''
@@ -87,7 +92,7 @@ def search_tor():
 
     search_url = f"https://duckduckgo.com/?t=h_&q={query}&ia=web"
     try:
-        response = requests.get(search_url, proxies=TOR_PROXY)
+        response = requests.get(search_url, proxies=TOR_PROXY, headers=headers)
         return response.text
     except Exception as e:
         return f"Ошибка при подключении через TOR: {e}", 500
@@ -101,7 +106,7 @@ def redirect_vpn(target):
     try:
         # Прокси через Tor для 2ip.ru
         if target == '2ip':
-            response = requests.get(url, proxies=TOR_PROXY)
+            response = requests.get(url, proxies=TOR_PROXY, headers=headers)
             return response.text  # Отправить содержимое 2ip.ru через Tor
         else:
             return redirect(url)
