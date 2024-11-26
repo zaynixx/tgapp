@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, url_for, jsonify
+from flask import Flask, request, redirect, render_template, url_for, jsonify, flash
 import requests
 import sqlite3
 from datetime import datetime
@@ -39,8 +39,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY,
             username TEXT,
-            password TEXT,
-            allowed_sites TEXT
+            password TEXT
         )
     ''')
     c.execute('''
@@ -56,13 +55,13 @@ def init_db():
     conn.close()
 
 # Функция для добавления нового пользователя
-def add_user(username, password, allowed_sites):
+def add_user(username, password):
     conn = sqlite3.connect('user_activity.db')
     c = conn.cursor()
     c.execute('''
-        INSERT INTO users (username, password, allowed_sites)
-        VALUES (?, ?, ?)
-    ''', (username, password, allowed_sites))
+        INSERT INTO users (username, password)
+        VALUES (?, ?)
+    ''', (username, password))
     conn.commit()
     conn.close()
 
@@ -89,11 +88,10 @@ def add_log(user_id, site):
 
 # Пользователь для Flask-Login
 class User(UserMixin):
-    def __init__(self, id, username, password, allowed_sites):
+    def __init__(self, id, username, password):
         self.id = id
         self.username = username
         self.password = password
-        self.allowed_sites = allowed_sites
 
 # Загрузка пользователя для Flask-Login
 @login_manager.user_loader
@@ -104,7 +102,7 @@ def load_user(user_id):
     user = c.fetchone()
     conn.close()
     if user:
-        return User(id=user[0], username=user[1], password=user[2], allowed_sites=user[3])
+        return User(id=user[0], username=user[1], password=user[2])
     return None
 
 # Страница логина
@@ -115,10 +113,11 @@ def login():
         password = request.form['password']
         user = get_user_by_username(username)
         if user and user[2] == password:  # Проверка пароля
-            login_user(User(id=user[0], username=user[1], password=user[2], allowed_sites=user[3]))
+            login_user(User(id=user[0], username=user[1], password=user[2]))
             return redirect(url_for('index'))
         else:
-            return "Неверный логин или пароль", 401
+            flash('Неверный логин или пароль', 'error')
+            return redirect(url_for('login'))
     return render_template('login.html')
 
 # Страница выхода
@@ -155,10 +154,6 @@ def redirect_vpn(target):
     user = get_user_by_username(current_user.username)
     if not user:
         return "Пользователь не найден!", 404
-
-    allowed_sites = user[3].split(',')
-    if target not in allowed_sites:
-        return "Доступ к этому сайту ограничен!", 403
 
     url = VPN_TARGETS.get(target)
     if not url:
