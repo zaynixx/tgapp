@@ -16,10 +16,64 @@ VPN_TARGETS = {
 }
 
 
-@app.route("/")
-def home():
-    return "Добро пожаловать в мини-приложение!"
+@app.route('/')
+def index():
+    return '''
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Мини-апп через TOR и VPN</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    text-align: center;
+                    margin: 20px;
+                }
+                input[type="text"] {
+                    width: 80%;
+                    padding: 10px;
+                    margin: 20px 0;
+                }
+                button {
+                    display: block;
+                    width: 80%;
+                    padding: 10px;
+                    margin: 10px auto;
+                    font-size: 16px;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>Мини-апп через TOR и VPN</h1>
+            <input type="text" id="search" placeholder="Введите запрос для поиска">
+            <button id="search-tor">Поиск через TOR</button>
+            <button id="open-tiktok">Открыть TikTok через VPN</button>
+            <button id="open-instagram">Открыть Instagram через VPN</button>
 
+            <script>
+                // Обработка кнопок
+                document.getElementById('search-tor').addEventListener('click', () => {
+                    const query = document.getElementById('search').value;
+                    if (query) {
+                        window.location.href = `/search?query=${encodeURIComponent(query)}`;
+                    } else {
+                        alert("Введите запрос для поиска.");
+                    }
+                });
+
+                document.getElementById('open-tiktok').addEventListener('click', () => {
+                    window.location.href = '/redirect/tiktok';
+                });
+
+                document.getElementById('open-instagram').addEventListener('click', () => {
+                    window.location.href = '/redirect/instagram';
+                });
+            </script>
+        </body>
+        </html>
+    '''
 
 @app.route('/search')
 def search_tor():
