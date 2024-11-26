@@ -106,6 +106,18 @@ class User(UserMixin):
         conn.commit()
         conn.close()
 
+    @staticmethod
+    def get_all_users():
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+
+        cursor.execute('SELECT * FROM user')
+        users_data = cursor.fetchall()
+        conn.close()
+
+        users = [User(*user_data) for user_data in users_data]
+        return users
+
 # Загрузка пользователя в Flask-Login
 @login_manager.user_loader
 def load_user(user_id):
@@ -196,11 +208,7 @@ def admin():
         flash('У вас нет прав администратора!', 'error')
         return redirect(url_for('index'))
 
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM user')
-    users = cursor.fetchall()
-    conn.close()
+    users = User.get_all_users()  # Получаем список пользователей в виде объектов
 
     return render_template('admin.html', users=users)
 
@@ -212,23 +220,23 @@ def set_permissions(user_id):
         flash('У вас нет прав администратора!', 'error')
         return redirect(url_for('index'))
 
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-
-    cursor.execute('SELECT * FROM user WHERE id = ?', (user_id,))
-    user_data = cursor.fetchone()
-
-    if user_data:
+    user = User.get_by_id(user_id)  # Загружаем объект пользователя
+    if user:
         can_use_instagram = 'instagram' in request.form
         can_use_tiktok = 'tiktok' in request.form
+
+        # Обновляем права пользователя
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+
         cursor.execute('''
         UPDATE user SET can_use_instagram = ?, can_use_tiktok = ? WHERE id = ?
         ''', (can_use_instagram, can_use_tiktok, user_id))
         conn.commit()
+        conn.close()
 
-        flash(f'Права для {user_data[1]} обновлены!', 'success')
+        flash(f'Права для {user.username} обновлены!', 'success')
 
-    conn.close()
     return redirect(url_for('admin'))
 
 if __name__ == '__main__':

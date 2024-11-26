@@ -3,6 +3,8 @@
     {% for user in users %}
         <li>
             {{ user.username }} 
+            <p>Instagram: {{ user.can_use_instagram }}</p>
+            <p>TikTok: {{ user.can_use_tiktok }}</p>
             <form method="POST" action="{{ url_for('set_permissions', user_id=user.id) }}">
                 <input type="checkbox" name="instagram" {% if user.can_use_instagram %}checked{% endif %}> Instagram
                 <input type="checkbox" name="tiktok" {% if user.can_use_tiktok %}checked{% endif %}> TikTok
@@ -10,4 +12,4 @@
             </form>
         </li>
     {% endfor %}
-</ul> 
+</ul>
