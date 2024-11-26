@@ -1,3 +1,4 @@
+import subprocess
 import sqlite3
 from flask import Flask, request, redirect, render_template, url_for, jsonify, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -123,6 +124,11 @@ class User(UserMixin):
 def load_user(user_id):
     return User.get_by_id(int(user_id))
 
+# Функция для запуска OpenVPN
+def start_vpn():
+    vpn_command = ["sudo", "openvpn", "--config", "/path/to/cfg.ovpn"]
+    subprocess.Popen(vpn_command)
+
 # Главная страница
 @app.route('/')
 def index():
@@ -190,14 +196,15 @@ def redirect_vpn(target):
             return "Цель не найдена!", 404
 
         try:
-            if target == '2ip':
+            start_vpn()  # Запускаем VPN
+            if target in ['tiktok', 'instagram']:
                 response = requests.get(url, proxies=TOR_PROXY, headers=headers)
                 return response.text
             else:
                 response = requests.get(url, proxies=TOR_PROXY, headers=headers)
                 return response.text
         except Exception as e:
-            return f"Ошибка при подключении через TOR: {e}", 500
+            return f"Ошибка при подключении через VPN: {e}", 500
     else:
         return "У вас нет прав для выполнения этого действия!", 403
 
