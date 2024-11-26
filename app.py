@@ -120,23 +120,22 @@ def index():
 
 import urllib.parse
 
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+}
+
 @app.route('/search')
 def search_tor():
     query = request.args.get('query', '')
     if not query:
         return "Введите запрос для поиска!", 400
 
-    # Экранируем запрос для URL
     encoded_query = urllib.parse.quote(query)
-
-    # Формируем правильный URL для поиска на Qwant
     search_url = f"https://www.qwant.com/?q={encoded_query}&t=web"
 
     try:
-        # Отправляем запрос через TOR
-        response = requests.get(search_url, proxies=TOR_PROXY)
-        
-        # Если запрос успешен, возвращаем полученный HTML
+        response = requests.get(search_url, headers=headers, proxies=TOR_PROXY)
+
         if response.status_code == 200:
             return response.text
         else:
