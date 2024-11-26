@@ -183,7 +183,7 @@ def search_tor():
 @app.route('/redirect/<target>')
 @login_required
 def redirect_vpn(target):
-    if current_user.is_authenticated:  # Доступ только для аутентифицированных пользователей
+    if current_user.is_authenticated:
         url = VPN_TARGETS.get(target)
 
         if not url:
@@ -194,7 +194,8 @@ def redirect_vpn(target):
                 response = requests.get(url, proxies=TOR_PROXY, headers=headers)
                 return response.text
             else:
-                return redirect(url)
+                response = requests.get(url, proxies=TOR_PROXY, headers=headers)
+                return response.text
         except Exception as e:
             return f"Ошибка при подключении через TOR: {e}", 500
     else:
