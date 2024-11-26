@@ -42,6 +42,8 @@ class User(UserMixin, db.Model):
 # Загрузка пользователя для Flask-Login
 @login_manager.user_loader
 def load_user(user_id):
+    if user_id is None:
+        return None
     return User.query.get(int(user_id))
 
 # Главная страница
