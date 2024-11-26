@@ -6,7 +6,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.secret_key = 'your_secret_key'  # Убедитесь, что это уникальный секретный ключ
 
 # Инициализация Flask-Login
 login_manager = LoginManager()
@@ -70,6 +70,8 @@ def add_user(username, password):
 
 # Проверка пароля при логине
 def check_password(user, password):
+    print(f"Проверяем пароль для пользователя {user[1]}")  # Логируем имя пользователя
+    print(f"Пароль: {password} | Хеш: {user[2]}")  # Логируем введенный пароль и хеш в базе
     return check_password_hash(user[2], password)  # Проверка пароля с хешем
 
 # Получение пользователя по имени
@@ -147,12 +149,15 @@ def login():
         username = request.form['username']
         password = request.form['password']
         user = get_user_by_username(username)
-        if user and check_password(user, password):  # Используем функцию для проверки пароля
-            login_user(User(id=user[0], username=user[1], password=user[2]))
-            return redirect(url_for('index'))
+        if user:
+            if check_password(user, password):  # Используем функцию для проверки пароля
+                login_user(User(id=user[0], username=user[1], password=user[2]))
+                return redirect(url_for('index'))
+            else:
+                flash('Неверный логин или пароль', 'error')
         else:
             flash('Неверный логин или пароль', 'error')
-            return redirect(url_for('login'))
+        return redirect(url_for('login'))
     return render_template('login.html')
 
 # Страница выхода
