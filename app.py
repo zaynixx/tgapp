@@ -49,6 +49,9 @@ def index():
             <button id="search-tor">Поиск через TOR</button>
             <button id="open-tiktok">Открыть TikTok через VPN</button>
             <button id="open-instagram">Открыть Instagram через VPN</button>
+            
+            <!-- Кнопка назад -->
+            <button id="back-to-home">Назад на главную</button>
 
             <script>
                 // Обработка кнопок
@@ -67,6 +70,11 @@ def index():
 
                 document.getElementById('open-instagram').addEventListener('click', () => {
                     window.location.href = '/redirect/instagram';
+                });
+
+                // Кнопка "Назад"
+                document.getElementById('back-to-home').addEventListener('click', () => {
+                    window.location.href = '/';  // Возвращаем на главную страницу
                 });
             </script>
         </body>
