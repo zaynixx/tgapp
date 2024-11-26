@@ -195,16 +195,21 @@ def redirect_vpn(target):
         if not url:
             return "Цель не найдена!", 404
 
-        try:
+        # Если цель TikTok или Instagram - используем VPN
+        if target in ['tiktok', 'instagram']:
             start_vpn()  # Запускаем VPN
-            if target in ['tiktok', 'instagram']:
-                response = requests.get(url, proxies=TOR_PROXY, headers=headers)
+            try:
+                response = requests.get(url, headers=headers)  # Через VPN
                 return response.text
-            else:
-                response = requests.get(url, proxies=TOR_PROXY, headers=headers)
+            except Exception as e:
+                return f"Ошибка при подключении через VPN: {e}", 500
+        else:
+            # Для других целей используем TOR
+            try:
+                response = requests.get(url, proxies=TOR_PROXY, headers=headers)  # Через TOR
                 return response.text
-        except Exception as e:
-            return f"Ошибка при подключении через VPN: {e}", 500
+            except Exception as e:
+                return f"Ошибка при подключении через TOR: {e}", 500
     else:
         return "У вас нет прав для выполнения этого действия!", 403
 
