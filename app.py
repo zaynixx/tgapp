@@ -183,9 +183,7 @@ def search_tor():
 @app.route('/redirect/<target>')
 @login_required
 def redirect_vpn(target):
-    # Проверяем права доступа
-    if current_user.is_admin or (target == '2ip' and current_user.is_authenticated):
-        # Получаем URL для целевого ресурса
+    if current_user.is_authenticated:  # Доступ только для аутентифицированных пользователей
         url = VPN_TARGETS.get(target)
 
         if not url:
@@ -193,17 +191,13 @@ def redirect_vpn(target):
 
         try:
             if target == '2ip':
-                # Для 2ip.ru делаем запрос через TOR
                 response = requests.get(url, proxies=TOR_PROXY, headers=headers)
                 return response.text
             else:
-                # Для других целей просто перенаправляем пользователя
                 return redirect(url)
         except Exception as e:
-            # Ошибка при подключении через TOR
             return f"Ошибка при подключении через TOR: {e}", 500
     else:
-        # Если у пользователя нет прав для выполнения действия
         return "У вас нет прав для выполнения этого действия!", 403
 
 # Панель администратора
