@@ -1,5 +1,5 @@
+import sqlite3
 from flask import Flask, request, redirect, render_template, url_for, jsonify, flash
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests
@@ -26,29 +26,90 @@ headers = {
 }
 
 # Конфигурация базы данных
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'  # Используем SQLite для простоты
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+DB_NAME = 'users.db'
 
 # Настройка Flask-Login
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-# Модели базы данных
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), unique=True, nullable=False)
-    password = db.Column(db.String(150), nullable=False)
-    is_admin = db.Column(db.Boolean, default=False)
-    can_use_tiktok = db.Column(db.Boolean, default=False)
-    can_use_instagram = db.Column(db.Boolean, default=False)
+# Создание базы данных и таблицы пользователей
+def create_db():
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
 
-    def __repr__(self):
-        return f'<User {self.username}>'
+    # Создание таблицы user
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS user (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        is_admin INTEGER DEFAULT 0,
+        can_use_tiktok INTEGER DEFAULT 0,
+        can_use_instagram INTEGER DEFAULT 0
+    )
+    ''')
 
-# Создание базы данных
+    conn.commit()
+    conn.close()
+
+# Создаем таблицу при старте приложения
 with app.app_context():
-    db.create_all()
+    create_db()
+
+# Модели базы данных и логика пользователя
+class User(UserMixin):
+    def __init__(self, id, username, password, is_admin=False, can_use_tiktok=False, can_use_instagram=False):
+        self.id = id
+        self.username = username
+        self.password = password
+        self.is_admin = is_admin
+        self.can_use_tiktok = can_use_tiktok
+        self.can_use_instagram = can_use_instagram
+
+    @staticmethod
+    def get_by_id(user_id):
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+
+        cursor.execute('SELECT * FROM user WHERE id = ?', (user_id,))
+        user_data = cursor.fetchone()
+        conn.close()
+
+        if user_data:
+            return User(*user_data)
+        return None
+
+    @staticmethod
+    def get_by_username(username):
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+
+        cursor.execute('SELECT * FROM user WHERE username = ?', (username,))
+        user_data = cursor.fetchone()
+        conn.close()
+
+        if user_data:
+            return User(*user_data)
+        return None
+
+    @staticmethod
+    def create(username, password):
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+
+        hashed_password = generate_password_hash(password)
+        cursor.execute('''
+        INSERT INTO user (username, password)
+        VALUES (?, ?)
+        ''', (username, hashed_password))
+
+        conn.commit()
+        conn.close()
+
+# Загрузка пользователя в Flask-Login
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get_by_id(int(user_id))
 
 # Главная страница
 @app.route('/')
@@ -60,17 +121,12 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-        new_user = User(username=username, password=hashed_password)
-
-        try:
-            db.session.add(new_user)
-            db.session.commit()
+        if User.get_by_username(username):
+            flash('Пользователь с таким именем уже существует!', 'error')
+        else:
+            User.create(username, password)
             flash('Регистрация успешна!', 'success')
             return redirect(url_for('login'))
-        except:
-            db.session.rollback()
-            flash('Ошибка регистрации!', 'error')
     return render_template('register.html')
 
 # Вход пользователя
@@ -79,7 +135,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        user = User.query.filter_by(username=username).first()
+        user = User.get_by_username(username)
 
         if user and check_password_hash(user.password, password):
             login_user(user)
@@ -139,7 +195,13 @@ def admin():
     if not current_user.is_admin:
         flash('У вас нет прав администратора!', 'error')
         return redirect(url_for('index'))
-    users = User.query.all()
+
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM user')
+    users = cursor.fetchall()
+    conn.close()
+
     return render_template('admin.html', users=users)
 
 # Настройки прав пользователей
@@ -150,18 +212,24 @@ def set_permissions(user_id):
         flash('У вас нет прав администратора!', 'error')
         return redirect(url_for('index'))
 
-    user = User.query.get(user_id)
-    if user:
-        user.can_use_instagram = 'instagram' in request.form
-        user.can_use_tiktok = 'tiktok' in request.form
-        db.session.commit()
-        flash(f'Права для {user.username} обновлены!', 'success')
-    return redirect(url_for('admin'))
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
 
-# Загрузка пользователя в Flask-Login
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+    cursor.execute('SELECT * FROM user WHERE id = ?', (user_id,))
+    user_data = cursor.fetchone()
+
+    if user_data:
+        can_use_instagram = 'instagram' in request.form
+        can_use_tiktok = 'tiktok' in request.form
+        cursor.execute('''
+        UPDATE user SET can_use_instagram = ?, can_use_tiktok = ? WHERE id = ?
+        ''', (can_use_instagram, can_use_tiktok, user_id))
+        conn.commit()
+
+        flash(f'Права для {user_data[1]} обновлены!', 'success')
+
+    conn.close()
+    return redirect(url_for('admin'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
