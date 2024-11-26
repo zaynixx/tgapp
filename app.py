@@ -15,6 +15,12 @@ VPN_TARGETS = {
     "instagram": "https://www.instagram.com"
 }
 
+
+@app.route("/")
+def home():
+    return "Добро пожаловать в мини-приложение!"
+
+
 @app.route('/search')
 def search_tor():
     query = request.args.get('query', '')
