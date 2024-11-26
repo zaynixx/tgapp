@@ -118,26 +118,30 @@ def index():
         </html>
     '''
 
+import urllib.parse
+
 @app.route('/search')
 def search_tor():
     query = request.args.get('query', '')
     if not query:
         return "Введите запрос для поиска!", 400
 
-    # Экранируем запрос, чтобы избежать проблем с символами в URL
+    # Экранируем запрос для URL
     encoded_query = urllib.parse.quote(query)
 
     # Формируем правильный URL для поиска на Qwant
     search_url = f"https://www.qwant.com/?q={encoded_query}&t=web"
-    
+
     # Логируем URL для отладки
     print(f"Запрос на Qwant: {search_url}")
     
     try:
+        # Отправляем запрос через TOR
         response = requests.get(search_url, proxies=TOR_PROXY)
         return response.text
     except Exception as e:
         return f"Ошибка при подключении через TOR: {e}", 500
+
 
 @app.route('/redirect/<target>')
 def redirect_vpn(target):
