@@ -6,7 +6,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Убедитесь, что это уникальный секретный ключ
+app.secret_key = b'\xf6Sy"\x0f\x8dc\xc3\x98t6\xafJ\xdd\x8aFV(M\xc7#0\x0cM'  # Убедитесь, что это уникальный секретный ключ
 
 # Инициализация Flask-Login
 login_manager = LoginManager()
