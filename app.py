@@ -29,11 +29,13 @@ def index():
                     text-align: center;
                     margin: 20px;
                 }
+
                 input[type="text"] {
                     width: 80%;
                     padding: 10px;
                     margin: 20px 0;
                 }
+
                 button {
                     display: block;
                     width: 80%;
@@ -41,6 +43,48 @@ def index():
                     margin: 10px auto;
                     font-size: 16px;
                 }
+
+                header {
+                    background-color: #333;
+                    color: #fff;
+                    padding: 20px;
+                    text-align: center;
+                }
+
+                h1 {
+                    margin: 0;
+                    font-size: 36px;
+                }
+
+                main {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    margin-top: 20px;
+                }
+
+                form {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    margin-bottom: 20px;
+                }
+
+                button:hover {
+                    background-color: #555;
+                }
+
+                .buttons {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                    margin-top: 20px;
+                }
+
+                .buttons button {
+                    margin-right: 10px;
+                }       
             </style>
         </head>
         <body>
