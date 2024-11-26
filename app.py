@@ -1,5 +1,6 @@
 from flask import Flask, request, redirect
 import requests
+import urllib.parse
 
 app = Flask(__name__)
 
@@ -123,7 +124,15 @@ def search_tor():
     if not query:
         return "Введите запрос для поиска!", 400
 
-    search_url = f"https://www.qwant.com/?q={query}&t=web" 
+    # Экранируем запрос, чтобы избежать проблем с символами в URL
+    encoded_query = urllib.parse.quote(query)
+
+    # Формируем правильный URL для поиска на Qwant
+    search_url = f"https://www.qwant.com/?q={encoded_query}&t=web"
+    
+    # Логируем URL для отладки
+    print(f"Запрос на Qwant: {search_url}")
+    
     try:
         response = requests.get(search_url, proxies=TOR_PROXY)
         return response.text
