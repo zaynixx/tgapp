@@ -30,6 +30,7 @@
     <button id="search-tor">Поиск через TOR</button>
     <button id="open-tiktok">Открыть TikTok через VPN</button>
     <button id="open-instagram">Открыть Instagram через VPN</button>
+    <button id="open-2ip">Открыть 2ip.ru через TOR</button>
 
     <script>
         // Обработка кнопок
@@ -48,6 +49,10 @@
 
         document.getElementById('open-instagram').addEventListener('click', () => {
             window.location.href = '/redirect/instagram';
+        });
+
+        document.getElementById('open-2ip').addEventListener('click', () => {
+            window.location.href = '/redirect/2ip';
         });
     </script>
 </body>
