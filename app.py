@@ -1,6 +1,5 @@
 from flask import Flask, request, redirect
 import requests
-import urllib.parse
 
 app = Flask(__name__)
 
@@ -118,31 +117,20 @@ def index():
         </html>
     '''
 
-import urllib.parse
-
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
-}
-
 @app.route('/search')
 def search_tor():
     query = request.args.get('query', '')
     if not query:
         return "Введите запрос для поиска!", 400
 
-    encoded_query = urllib.parse.quote(query)
-    search_url = f"https://www.qwant.com/?q={encoded_query}&t=web"
+    search_url = f"https://duckduckgo.com/?q={query}"
 
     try:
-        response = requests.get(search_url, headers=headers, proxies=TOR_PROXY)
-
-        if response.status_code == 200:
-            return response.text
-        else:
-            return f"Ошибка: {response.status_code}, {response.text[:200]}", 500
-    except Exception as e:
+        response = requests.get(search_url, proxies=TOR_PROXY)
+        response.raise_for_status()  
+        return response.text
+    except requests.exceptions.RequestException as e:
         return f"Ошибка при подключении через TOR: {e}", 500
-
 
 
 @app.route('/redirect/<target>')
