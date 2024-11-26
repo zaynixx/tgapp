@@ -123,7 +123,7 @@ def search_tor():
     if not query:
         return "Введите запрос для поиска!", 400
 
-    search_url = f"https://www.qwant.com/?q={query}"  # Qwant URL для поиска
+    search_url = f"https://www.qwant.com/?q={query}&t=web" 
     try:
         response = requests.get(search_url, proxies=TOR_PROXY)
         return response.text
