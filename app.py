@@ -3,6 +3,7 @@ import requests
 import sqlite3
 from datetime import datetime
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -55,16 +56,21 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Функция для добавления нового пользователя
+# Функция для добавления нового пользователя с хешированным паролем
 def add_user(username, password):
+    hashed_password = generate_password_hash(password)  # Хеширование пароля
     conn = sqlite3.connect('user_activity.db')
     c = conn.cursor()
     c.execute('''
         INSERT INTO users (username, password)
         VALUES (?, ?)
-    ''', (username, password))
+    ''', (username, hashed_password))
     conn.commit()
     conn.close()
+
+# Проверка пароля при логине
+def check_password(user, password):
+    return check_password_hash(user[2], password)  # Проверка пароля с хешем
 
 # Получение пользователя по имени
 def get_user_by_username(username):
@@ -106,6 +112,34 @@ def load_user(user_id):
         return User(id=user[0], username=user[1], password=user[2])
     return None
 
+# Страница регистрации
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        password_confirmation = request.form['password_confirmation']
+        
+        # Проверка, что пароли совпадают
+        if password != password_confirmation:
+            flash('Пароли не совпадают', 'error')
+            return redirect(url_for('register'))
+        
+        # Проверка, что пользователь не существует
+        if get_user_by_username(username):
+            flash('Пользователь с таким именем уже существует', 'error')
+            return redirect(url_for('register'))
+        
+        # Добавление нового пользователя в базу данных
+        add_user(username, password)
+        
+        # Перенаправление на страницу логина после успешной регистрации
+        flash('Регистрация прошла успешно. Пожалуйста, войдите.', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
+
+
 # Страница логина
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -113,9 +147,8 @@ def login():
         username = request.form['username']
         password = request.form['password']
         user = get_user_by_username(username)
-        if user and user[2] == password:  # Проверка пароля
+        if user and check_password(user, password):  # Используем функцию для проверки пароля
             login_user(User(id=user[0], username=user[1], password=user[2]))
-            add_log(user[0], 'Login')  # Логирование входа
             return redirect(url_for('index'))
         else:
             flash('Неверный логин или пароль', 'error')
