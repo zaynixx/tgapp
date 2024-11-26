@@ -87,9 +87,9 @@ def add_log(user_id, site, action=None):
     c = conn.cursor()
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     c.execute('''
-        INSERT INTO logs (user_id, site, timestamp, action)
+        INSERT INTO logs (user_id, action, target, timestamp)
         VALUES (?, ?, ?, ?)
-    ''', (user_id, site, timestamp, action))
+    ''', (user_id, action, site, timestamp))
     conn.commit()
     conn.close()
 
