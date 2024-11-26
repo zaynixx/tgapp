@@ -46,7 +46,8 @@ def init_db():
         CREATE TABLE IF NOT EXISTS logs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER,
-            site TEXT,
+            action TEXT,
+            target TEXT,
             timestamp TEXT,
             FOREIGN KEY (user_id) REFERENCES users(id)
         )
@@ -74,15 +75,15 @@ def get_user_by_username(username):
     conn.close()
     return user
 
-# Логирование посещений
-def add_log(user_id, site):
+# Логирование действий (посещение сайтов и другие действия)
+def add_log(user_id, action, target=None):
     conn = sqlite3.connect('user_activity.db')
     c = conn.cursor()
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     c.execute('''
-        INSERT INTO logs (user_id, site, timestamp)
-        VALUES (?, ?, ?)
-    ''', (user_id, site, timestamp))
+        INSERT INTO logs (user_id, action, target, timestamp)
+        VALUES (?, ?, ?, ?)
+    ''', (user_id, action, target, timestamp))
     conn.commit()
     conn.close()
 
@@ -114,6 +115,7 @@ def login():
         user = get_user_by_username(username)
         if user and user[2] == password:  # Проверка пароля
             login_user(User(id=user[0], username=user[1], password=user[2]))
+            add_log(user[0], 'Login')  # Логирование входа
             return redirect(url_for('index'))
         else:
             flash('Неверный логин или пароль', 'error')
@@ -124,6 +126,8 @@ def login():
 @app.route('/logout')
 @login_required
 def logout():
+    user_id = current_user.id
+    add_log(user_id, 'Logout')  # Логирование выхода
     logout_user()
     return redirect(url_for('login'))
 
@@ -133,6 +137,7 @@ def logout():
 def index():
     return render_template('index.html', user=current_user)
 
+# Поиск через TOR
 @app.route('/search')
 @login_required
 def search_tor():
@@ -143,23 +148,21 @@ def search_tor():
     search_url = f"https://duckduckgo.com/?t=h_&q={query}&ia=web"
     try:
         response = requests.get(search_url, proxies=TOR_PROXY, headers=headers)
+        add_log(current_user.id, 'Search', query)  # Логирование поиска
         return response.text
     except Exception as e:
         return f"Ошибка при подключении через TOR: {e}", 500
 
+# Перенаправление через TOR на внешние сервисы
 @app.route('/redirect/<target>')
 @login_required
 def redirect_vpn(target):
     user_id = current_user.id
-    user = get_user_by_username(current_user.username)
-    if not user:
-        return "Пользователь не найден!", 404
-
     url = VPN_TARGETS.get(target)
     if not url:
         return "Цель не найдена!", 404
 
-    add_log(user_id, target)
+    add_log(user_id, 'Visit', target)  # Логирование посещения сайта
 
     try:
         if target == '2ip':
@@ -169,6 +172,21 @@ def redirect_vpn(target):
             return redirect(url)
     except Exception as e:
         return f"Ошибка при подключении через TOR: {e}", 500
+
+# Страница для просмотра логов (только для администраторов)
+@app.route('/logs')
+@login_required
+def view_logs():
+    if current_user.username != "admin":  # Убедитесь, что это администратор
+        return "Доступ запрещен", 403
+
+    conn = sqlite3.connect('user_activity.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM logs')
+    logs = c.fetchall()
+    conn.close()
+
+    return render_template('logs.html', logs=logs)
 
 if __name__ == '__main__':
     init_db()
