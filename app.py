@@ -59,6 +59,7 @@ def init_db():
 # Функция для добавления нового пользователя с хешированным паролем
 def add_user(username, password):
     hashed_password = generate_password_hash(password)  # Хеширование пароля
+    print(f"Хеш пароля для {username}: {hashed_password}")  # Логируем хеш
     conn = sqlite3.connect('user_activity.db')
     c = conn.cursor()
     c.execute('''
@@ -81,6 +82,7 @@ def get_user_by_username(username):
     c.execute('SELECT * FROM users WHERE username = ?', (username,))
     user = c.fetchone()
     conn.close()
+    print(f"Полученные данные для пользователя {username}: {user}")  # Логируем данные пользователя
     return user
 
 # Логирование действий (посещение сайтов и другие действия)
@@ -150,6 +152,7 @@ def login():
         password = request.form['password']
         user = get_user_by_username(username)
         if user:
+            print(f"Найден пользователь: {user[1]}")
             if check_password(user, password):  # Используем функцию для проверки пароля
                 login_user(User(id=user[0], username=user[1], password=user[2]))
                 return redirect(url_for('index'))
