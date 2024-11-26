@@ -147,11 +147,12 @@ def login():
         username = request.form['username']
         password = request.form['password']
         user = get_user_by_username(username)
-        if user and check_password(user, password):  # Используем функцию для проверки пароля
+        if user and check_password(user, password):  # Проверка правильности пароля
             login_user(User(id=user[0], username=user[1], password=user[2]))
             return redirect(url_for('index'))
         else:
             flash('Неверный логин или пароль', 'error')
+            print(f"Failed login attempt: username={username}")  # Для отладки
             return redirect(url_for('login'))
     return render_template('login.html')
 
