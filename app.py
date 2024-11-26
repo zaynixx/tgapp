@@ -3,16 +3,17 @@ import requests
 
 app = Flask(__name__)
 
+# Конфигурация для работы с TOR через SOCKS5
 TOR_PROXY = {
     "http": "socks5h://127.0.0.1:9050",
     "https": "socks5h://127.0.0.1:9050"
 }
 
+# Внешние сервисы, на которые нужно перенаправить трафик
 VPN_TARGETS = {
     "tiktok": "https://www.tiktok.com",
     "instagram": "https://www.instagram.com"
 }
-
 
 @app.route('/')
 def index():
@@ -22,20 +23,18 @@ def index():
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Мини-апп через TOR и VPN</title>
+            <title>Мини-апп через TOR</title>
             <style>
                 body {
                     font-family: Arial, sans-serif;
                     text-align: center;
                     margin: 20px;
                 }
-
                 input[type="text"] {
                     width: 80%;
                     padding: 10px;
                     margin: 20px 0;
                 }
-
                 button {
                     display: block;
                     width: 80%;
@@ -43,59 +42,16 @@ def index():
                     margin: 10px auto;
                     font-size: 16px;
                 }
-
-                header {
-                    background-color: #333;
-                    color: #fff;
-                    padding: 20px;
-                    text-align: center;
-                }
-
-                h1 {
-                    margin: 0;
-                    font-size: 36px;
-                }
-
-                main {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    margin-top: 20px;
-                }
-
-                form {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    margin-bottom: 20px;
-                }
-
-                button:hover {
-                    background-color: #555;
-                }
-
-                .buttons {
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: center;
-                    align-items: center;
-                    margin-top: 20px;
-                }
-
-                .buttons button {
-                    margin-right: 10px;
-                }       
             </style>
         </head>
         <body>
-            <h1>Мини-апп через TOR и VPN</h1>
+            <h1>Мини-апп через TOR</h1>
             <input type="text" id="search" placeholder="Введите запрос для поиска">
             <button id="search-tor">Поиск через TOR</button>
-            <button id="open-tiktok">Открыть TikTok через VPN</button>
-            <button id="open-instagram">Открыть Instagram через VPN</button>
+            <button id="open-tiktok">Открыть TikTok через TOR</button>
+            <button id="open-instagram">Открыть Instagram через TOR</button>
 
             <script>
-                // Обработка кнопок
                 document.getElementById('search-tor').addEventListener('click', () => {
                     const query = document.getElementById('search').value;
                     if (query) {
@@ -123,15 +79,12 @@ def search_tor():
     if not query:
         return "Введите запрос для поиска!", 400
 
-    search_url = f"https://duckduckgo.com/?q={query}"
-
+    search_url = f"https://duckduckgo.com/?t=h_&q={query}&ia=web"
     try:
         response = requests.get(search_url, proxies=TOR_PROXY)
-        response.raise_for_status()  
         return response.text
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         return f"Ошибка при подключении через TOR: {e}", 500
-
 
 @app.route('/redirect/<target>')
 def redirect_vpn(target):
