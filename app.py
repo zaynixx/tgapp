@@ -140,13 +140,11 @@ def start_vpn():
     vpn_command = ["sudo", "openvpn", "--config", "cfg.ovpn"]
     subprocess.Popen(vpn_command)
 
+
+# Главная страница
 @app.route('/')
 def index():
-    username = "логин"  # Пример: передаем имя пользователя в шаблон
-    return render_template('index.html', username=username)
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    return render_template('index.html')
 
 @app.route('/buy_access/<target>', methods=['GET'])
 @login_required
