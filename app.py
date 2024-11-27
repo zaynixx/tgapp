@@ -158,6 +158,10 @@ def register():
             return redirect(url_for('login'))
     return render_template('register.html')
 
+@app.route('/buy_access/<target>', methods=['GET'])
+def buy_access(target):
+    return render_template('buy_access.html', target=target, price=666)
+
 # Вход пользователя
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -198,37 +202,33 @@ def search_tor():
         return f"Ошибка при подключении через TOR: {e}", 500
 
 
+# Обновленные маршруты с проверкой доступа
 @app.route('/redirect/<target>')
+@login_required
 def redirect_vpn(target):
+    if not getattr(current_user, f"can_use_{target}", False):
+        return redirect(url_for('buy_access', target=target))
+
     url = VPN_TARGETS.get(target)
     if not url:
         return "Цель не найдена!", 404
 
     try:
-        # Запуск OpenVPN для трафика через него
         start_vpn()
-
-        # После подключения через VPN, делаем запрос к целевому сервису
-        if target == '2ip':
-            response = requests.get(url, proxies=TOR_PROXY, headers=headers)
-            return response.text
-        else:
-            # Для Instagram и TikTok перенаправляем через VPN
-            return redirect(url)
+        return redirect(url)
     except Exception as e:
-        return f"Ошибка при подключении через TOR или VPN: {e}", 500
+        return f"Ошибка при подключении через VPN: {e}", 500
 
 @app.route('/open_2ip_vpn')
 @login_required
 def open_2ip_vpn():
+    if not current_user.can_use_2ip:
+        return redirect(url_for('buy_access', target='2ip'))
+
     try:
-        # Запускаем OpenVPN перед тем как сделать запрос
         start_vpn()
-
-        # URL для 2ip через VPN
         url = "https://2ip.ru"
-        response = requests.get(url, headers=headers)  # Отправляем запрос через VPN
-
+        response = requests.get(url, headers=headers)
         return response.text
     except Exception as e:
         return f"Ошибка при подключении через VPN: {e}", 500

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Купить доступ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .container {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            display: inline-block;
+            text-align: left;
+        }
+        button {
+            padding: 10px 20px;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Доступ к {{ target }}</h1>
+        <p>Для использования этой функции, пожалуйста, купите доступ за {{ price }} рублей.</p>
+        <button onclick="alert('Покупка пока не реализована!')">Купить доступ</button>
+        <br>
+        <a href="/" style="display: block; margin-top: 10px;">Вернуться на главную</a>
+    </div>
+</body>
+</html>
