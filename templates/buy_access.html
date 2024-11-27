@@ -5,22 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Купить доступ</title>
     <style>
+        /* Основной стиль (для светлой темы по умолчанию) */
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 20px;
+            background-color: #fff;
+            color: #000;
         }
+
         .container {
             padding: 20px;
             border: 1px solid #ddd;
             border-radius: 10px;
             display: inline-block;
             text-align: left;
+            background-color: #fff;
+            color: #000;
         }
+
         button {
             padding: 10px 20px;
             margin-top: 20px;
             font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            text-decoration: none;
+            color: #007BFF;
+        }
+
+        /* Темная тема */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #333;
+                color: #fff;
+            }
+
+            .container {
+                background-color: #444;
+                color: #fff;
+                border: 1px solid #555;
+            }
+
+            button {
+                background-color: #0056b3;
+            }
+
+            button:hover {
+                background-color: #007BFF;
+            }
+
+            a {
+                color: #5C9BCF;
+            }
         }
     </style>
 </head>

@@ -6,6 +6,44 @@
 <p>Уже есть аккаунт? <a href="/login" id="login-link">Войти</a></p>
 
 <style>
+    /* Основной стиль для светлой темы */
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #fff;
+        color: #000;
+    }
+
+    form {
+        text-align: center;
+        margin-top: 50px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        width: 80%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #000;
+    }
+
+    button {
+        padding: 10px 20px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
     #login-link {
         display: inline-block;
         margin-top: 10px;
@@ -16,7 +54,39 @@
         border-radius: 5px;
         font-size: 14px;
     }
+
     #login-link:hover {
         background-color: #0056b3;
+    }
+
+    /* Темная тема */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #333;
+            color: #fff;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            background-color: #444;
+            border: 1px solid #555;
+            color: #fff;
+        }
+
+        button {
+            background-color: #0056b3;
+        }
+
+        button:hover {
+            background-color: #007BFF;
+        }
+
+        #login-link {
+            background-color: #0056b3;
+        }
+
+        #login-link:hover {
+            background-color: #007BFF;
+        }
     }
 </style>

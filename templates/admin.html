@@ -2,16 +2,101 @@
 <ul>
     {% for user in users %}
         <li>
-            {{ user.username }} 
+            <strong>{{ user.username }}</strong> 
             <p>Instagram: {{ user.can_use_instagram }}</p>
             <p>TikTok: {{ user.can_use_tiktok }}</p>
-            <p>2ip: {{ user.can_use_2ip }}</p>  <!-- Отображаем права на 2ip -->
+            <p>2ip: {{ user.can_use_2ip }}</p> <!-- Отображаем права на 2ip -->
             <form method="POST" action="{{ url_for('set_permissions', user_id=user.id) }}">
                 <input type="checkbox" name="instagram" {% if user.can_use_instagram %}checked{% endif %}> Instagram
                 <input type="checkbox" name="tiktok" {% if user.can_use_tiktok %}checked{% endif %}> TikTok
-                <input type="checkbox" name="2ip" {% if user.can_use_2ip %}checked{% endif %}> 2ip  <!-- Новый checkbox для 2ip -->
+                <input type="checkbox" name="2ip" {% if user.can_use_2ip %}checked{% endif %}> 2ip <!-- Новый checkbox для 2ip -->
                 <button type="submit">Обновить права</button>
             </form>
         </li>
     {% endfor %}
 </ul>
+
+<style>
+    /* Основной стиль для светлой темы */
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #fff;
+        color: #000;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    li {
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+
+    form {
+        margin-top: 10px;
+        text-align: center;
+    }
+
+    input[type="checkbox"] {
+        margin-right: 10px;
+    }
+
+    button {
+        padding: 10px 20px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Темная тема */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #333;
+            color: #fff;
+        }
+
+        h1 {
+            color: #fff;
+        }
+
+        li {
+            background-color: #444;
+            border: 1px solid #555;
+        }
+
+        form {
+            background-color: #444;
+        }
+
+        input[type="checkbox"] {
+            accent-color: #007BFF;
+        }
+
+        button {
+            background-color: #0056b3;
+        }
+
+        button:hover {
+            background-color: #007BFF;
+        }
+    }
+</style>
