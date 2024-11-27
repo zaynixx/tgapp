@@ -186,33 +186,24 @@ def search_tor():
     except Exception as e:
         return f"Ошибка при подключении через TOR: {e}", 500
 
+# Перенаправление через TOR
 @app.route('/redirect/<target>')
-@login_required
 def redirect_vpn(target):
-    if current_user.is_authenticated:
-        url = VPN_TARGETS.get(target)
+    url = VPN_TARGETS.get(target)
+    if not url:
+        return "Цель не найдена!", 404
 
-        if not url:
-            return "Цель не найдена!", 404
-
-        # Если цель TikTok или Instagram - используем VPN
-        if target in ['tiktok', 'instagram']:
-            start_vpn()  # Запускаем VPN
-            try:
-                response = requests.get(url, headers=headers)  # Через VPN
-                return response.text
-            except Exception as e:
-                return f"Ошибка при подключении через VPN: {e}", 500
+    try:
+        if target == '2ip':
+            response = requests.get(url, proxies=TOR_PROXY, headers=headers)
+            return response.text
         else:
-            # Для других целей используем TOR
-            try:
-                response = requests.get(url, proxies=TOR_PROXY, headers=headers)  # Через TOR
-                return response.text
-            except Exception as e:
-                return f"Ошибка при подключении через TOR: {e}", 500
-    else:
-        return "У вас нет прав для выполнения этого действия!", 403
+            return redirect(url)
+    except Exception as e:
+        return f"Ошибка при подключении через TOR: {e}", 500
 
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
 # Панель администратора
 @app.route('/admin')
 @login_required
