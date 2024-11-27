@@ -30,8 +30,7 @@
     <button id="search-tor">Поиск через TOR</button>
     <button id="open-tiktok">Открыть TikTok через VPN</button>
     <button id="open-instagram">Открыть Instagram через VPN</button>
-    <button id="open-2ip-tor">Открыть 2ip.ru через TOR</button> <!-- Кнопка для 2ip через TOR -->
-    <button id="open-2ip-vpn">Открыть 2ip.ru через VPN</button> <!-- Кнопка для 2ip через VPN -->
+    <button id="open-2ip">Открыть 2ip.ru через TOR</button> <!-- Кнопка для 2ip -->
 
     <script>
         // Обработка кнопок
@@ -52,14 +51,9 @@
             window.location.href = '/redirect/instagram';
         });
 
-        document.getElementById('open-2ip-tor').addEventListener('click', () => {
-        window.location.href = '/tor_redirect/2ip'; // Используем обработчик для TOR
-        }); 
-
-        document.getElementById('open-2ip-vpn').addEventListener('click', () => {
-        window.location.href = '/redirect/2ip'; // Используем обработчик для VPN
+        document.getElementById('open-2ip').addEventListener('click', () => {
+            window.location.href = '/redirect/2ip'; // Перенаправление на 2ip
         });
-
     </script>
 </body>
 </html>

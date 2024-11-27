@@ -158,10 +158,6 @@ def register():
             return redirect(url_for('login'))
     return render_template('register.html')
 
-@app.route('/buy_access/<target>', methods=['GET'])
-def buy_access(target):
-    return render_template('buy_access.html', target=target, price=666)
-
 # Вход пользователя
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -201,52 +197,27 @@ def search_tor():
     except Exception as e:
         return f"Ошибка при подключении через TOR: {e}", 500
 
-
+# Перенаправление через TOR
+# Перенаправление через TOR или VPN
 @app.route('/redirect/<target>')
-@login_required
 def redirect_vpn(target):
-    if not getattr(current_user, f"can_use_{target}", False):
-        return redirect(url_for('buy_access', target=target))
-
     url = VPN_TARGETS.get(target)
     if not url:
         return "Цель не найдена!", 404
 
     try:
-        start_vpn()  # Запускаем VPN
-        return redirect(url)
-    except Exception as e:
-        return f"Ошибка при подключении через VPN: {e}", 500
-
-@app.route('/open_2ip_vpn')
-@login_required
-def open_2ip_vpn():
-    if not current_user.can_use_2ip:
-        return redirect(url_for('buy_access', target='2ip'))
-
-    try:
+        # Запуск OpenVPN для трафика через него
         start_vpn()
-        url = "https://2ip.ru"
-        response = requests.get(url, headers=headers)
-        return response.text
-    except Exception as e:
-        return f"Ошибка при подключении через VPN: {e}", 500
-    
-@app.route('/tor_redirect/<target>')
-@login_required
-def redirect_tor(target):
-    if not getattr(current_user, f"can_use_tor", False):
-        return "У вас нет доступа к TOR. Пожалуйста, купите доступ.", 403
 
-    url = TOR_TARGETS.get(target)
-    if not url:
-        return "Цель не найдена!", 404
-
-    try:
-        start_tor_proxy()  # Запускаем прокси TOR
-        return redirect(url)
+        # После подключения через VPN, делаем запрос к целевому сервису
+        if target == '2ip':
+            response = requests.get(url, proxies=TOR_PROXY, headers=headers)
+            return response.text
+        else:
+            # Для Instagram и TikTok перенаправляем через VPN
+            return redirect(url)
     except Exception as e:
-        return f"Ошибка при подключении через TOR: {e}", 500
+        return f"Ошибка при подключении через TOR или VPN: {e}", 500
 
 # Панель администратора
 @app.route('/admin')
