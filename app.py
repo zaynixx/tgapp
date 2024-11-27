@@ -197,8 +197,7 @@ def search_tor():
     except Exception as e:
         return f"Ошибка при подключении через TOR: {e}", 500
 
-# Перенаправление через TOR
-# Перенаправление через TOR или VPN
+
 @app.route('/redirect/<target>')
 def redirect_vpn(target):
     url = VPN_TARGETS.get(target)
@@ -218,6 +217,21 @@ def redirect_vpn(target):
             return redirect(url)
     except Exception as e:
         return f"Ошибка при подключении через TOR или VPN: {e}", 500
+
+@app.route('/open_2ip_vpn')
+@login_required
+def open_2ip_vpn():
+    try:
+        # Запускаем OpenVPN перед тем как сделать запрос
+        start_vpn()
+
+        # URL для 2ip через VPN
+        url = "https://2ip.ru"
+        response = requests.get(url, headers=headers)  # Отправляем запрос через VPN
+
+        return response.text
+    except Exception as e:
+        return f"Ошибка при подключении через VPN: {e}", 500
 
 # Панель администратора
 @app.route('/admin')
