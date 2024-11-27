@@ -47,7 +47,7 @@ def create_db():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
-    # Создание таблицы user
+    # Обновление таблицы user для добавления нового поля
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS user (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,7 +55,8 @@ def create_db():
         password TEXT NOT NULL,
         is_admin INTEGER DEFAULT 0,
         can_use_tiktok INTEGER DEFAULT 0,
-        can_use_instagram INTEGER DEFAULT 0
+        can_use_instagram INTEGER DEFAULT 0,
+        can_use_2ip INTEGER DEFAULT 0  -- Новое поле для 2ip
     )
     ''')
 
@@ -241,14 +242,15 @@ def set_permissions(user_id):
     if user:
         can_use_instagram = 'instagram' in request.form
         can_use_tiktok = 'tiktok' in request.form
+        can_use_2ip = '2ip' in request.form  # Получаем новое поле для 2ip
 
         # Обновляем права пользователя
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
 
         cursor.execute('''
-        UPDATE user SET can_use_instagram = ?, can_use_tiktok = ? WHERE id = ?
-        ''', (can_use_instagram, can_use_tiktok, user_id))
+        UPDATE user SET can_use_instagram = ?, can_use_tiktok = ?, can_use_2ip = ? WHERE id = ?
+        ''', (can_use_instagram, can_use_tiktok, can_use_2ip, user_id))
         conn.commit()
         conn.close()
 

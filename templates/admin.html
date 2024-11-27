@@ -5,9 +5,11 @@
             {{ user.username }} 
             <p>Instagram: {{ user.can_use_instagram }}</p>
             <p>TikTok: {{ user.can_use_tiktok }}</p>
+            <p>2ip: {{ user.can_use_2ip }}</p>  <!-- Отображаем права на 2ip -->
             <form method="POST" action="{{ url_for('set_permissions', user_id=user.id) }}">
                 <input type="checkbox" name="instagram" {% if user.can_use_instagram %}checked{% endif %}> Instagram
                 <input type="checkbox" name="tiktok" {% if user.can_use_tiktok %}checked{% endif %}> TikTok
+                <input type="checkbox" name="2ip" {% if user.can_use_2ip %}checked{% endif %}> 2ip  <!-- Новый checkbox для 2ip -->
                 <button type="submit">Обновить права</button>
             </form>
         </li>
