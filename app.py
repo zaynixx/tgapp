@@ -196,6 +196,7 @@ def search_tor():
         return f"Ошибка при подключении через TOR: {e}", 500
 
 # Перенаправление через TOR
+# Перенаправление через TOR или VPN
 @app.route('/redirect/<target>')
 def redirect_vpn(target):
     url = VPN_TARGETS.get(target)
@@ -203,16 +204,19 @@ def redirect_vpn(target):
         return "Цель не найдена!", 404
 
     try:
+        # Запуск OpenVPN для трафика через него
+        start_vpn()
+
+        # После подключения через VPN, делаем запрос к целевому сервису
         if target == '2ip':
             response = requests.get(url, proxies=TOR_PROXY, headers=headers)
             return response.text
         else:
+            # Для Instagram и TikTok перенаправляем через VPN
             return redirect(url)
     except Exception as e:
-        return f"Ошибка при подключении через TOR: {e}", 500
+        return f"Ошибка при подключении через TOR или VPN: {e}", 500
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
 # Панель администратора
 @app.route('/admin')
 @login_required
