@@ -145,6 +145,12 @@ def start_vpn():
 def index():
     return render_template('index.html')
 
+@app.route('/buy_access/<target>')
+@login_required
+def buy_access(target):
+    # Логика для отображения страницы покупки доступа
+    return render_template('buy_access.html', target=target)
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
