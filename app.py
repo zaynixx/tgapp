@@ -222,7 +222,7 @@ def redirect_vpn(target):
 @login_required
 def open_2ip_vpn():
     try:
-        # Запускаем OpenVPN перед тем как сделать запрос
+        # Запускаем OpenVPN перед тем как сделать запро
         start_vpn()
 
         # URL для 2ip через VPN
