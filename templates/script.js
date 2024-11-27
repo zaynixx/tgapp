@@ -9,7 +9,7 @@ document.getElementById("search-tor").addEventListener("click", () => {
 });
 
 document.getElementById("open-tiktok").addEventListener("click", () => {
-  window.open("/redirect/tikto", "_blank");
+  window.open("/redirect/tiktok", "_blank");
 });
 
 document.getElementById("open-instagram").addEventListener("click", () => {
