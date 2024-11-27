@@ -135,7 +135,7 @@ def load_user(user_id):
 
 # Функция для запуска OpenVPN
 def start_vpn():
-    vpn_command = ["sudo", "openvpn", "--config", "/path/to/cfg.ovpn"]
+    vpn_command = ["sudo", "openvpn", "--config", "cfg.ovpn"]
     subprocess.Popen(vpn_command)
 
 # Главная страница
