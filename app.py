@@ -199,7 +199,16 @@ def search_tor():
 
 
 @app.route('/redirect/<target>')
+@login_required
 def redirect_vpn(target):
+    # Проверка прав на доступ к сервису
+    if target == 'instagram' and not current_user.can_use_instagram:
+        return redirect(url_for('buy_access', target='instagram'))
+    elif target == 'tiktok' and not current_user.can_use_tiktok:
+        return redirect(url_for('buy_access', target='tiktok'))
+    elif target == '2ip' and not current_user.can_use_2ip:
+        return redirect(url_for('buy_access', target='2ip'))
+
     url = VPN_TARGETS.get(target)
     if not url:
         return "Цель не найдена!", 404
@@ -221,8 +230,11 @@ def redirect_vpn(target):
 @app.route('/open_2ip_vpn')
 @login_required
 def open_2ip_vpn():
+    if not current_user.can_use_2ip:
+        return redirect(url_for('buy_access', target='2ip'))
+
     try:
-        # Запускаем OpenVPN перед тем как сделать запро
+        # Запускаем OpenVPN перед тем как сделать запрос
         start_vpn()
 
         # URL для 2ip через VPN
