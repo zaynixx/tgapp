@@ -148,11 +148,6 @@ def index():
 if __name__ == '__main__':
     app.run(debug=True)
 
-# Главная страница
-@app.route('/')
-def index():
-    return render_template('index.html')
-
 @app.route('/buy_access/<target>', methods=['GET'])
 @login_required
 def buy_access(target):
