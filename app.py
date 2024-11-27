@@ -4,10 +4,7 @@ from flask import Flask, request, redirect, render_template, url_for, jsonify, f
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests
-import subprocess
 import time
-
-
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_12345'  # Уникальный ключ для сессий
@@ -42,12 +39,12 @@ def start_vpn():
     vpn_command = ["sudo", "openvpn", "--config", "cfg.ovpn"]
     subprocess.Popen(vpn_command)
     time.sleep(10)  # Даем время на установку соединения VPN
+
 # Создание базы данных и таблицы пользователей
 def create_db():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
-    # Обновление таблицы user для добавления нового поля
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS user (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -135,12 +132,6 @@ class User(UserMixin):
 def load_user(user_id):
     return User.get_by_id(int(user_id))
 
-# Функция для запуска OpenVPN
-def start_vpn():
-    vpn_command = ["sudo", "openvpn", "--config", "cfg.ovpn"]
-    subprocess.Popen(vpn_command)
-
-
 # Главная страница
 @app.route('/')
 def index():
@@ -152,8 +143,7 @@ def buy_access(target):
     price = 666  # Цена для доступа
     return render_template('buy_access.html', target=target, price=price)
 
-
-
+# Регистрация
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -173,10 +163,13 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        
+        remember = 'remember' in request.form  # Проверка флага "remember me"
+
         user = User.get_by_username(username)
 
         if user and check_password_hash(user.password, password):
-            login_user(user)
+            login_user(user, remember=remember)  # Передаем параметр remember
             flash('Добро пожаловать!', 'success')
             return redirect(url_for('index'))
         else:
@@ -206,11 +199,9 @@ def search_tor():
     except Exception as e:
         return f"Ошибка при подключении через TOR: {e}", 500
 
-
 @app.route('/redirect/<target>')
 @login_required
 def redirect_vpn(target):
-    # Проверка прав на доступ к сервису
     if target == 'instagram' and not current_user.can_use_instagram:
         return redirect(url_for('buy_access', target='instagram'))
     elif target == 'tiktok' and not current_user.can_use_tiktok:
@@ -223,15 +214,12 @@ def redirect_vpn(target):
         return "Цель не найдена!", 404
 
     try:
-        # Запуск OpenVPN для трафика через него
         start_vpn()
 
-        # После подключения через VPN, делаем запрос к целевому сервису
         if target == '2ip':
             response = requests.get(url, proxies=TOR_PROXY, headers=headers)
             return response.text
         else:
-            # Для Instagram и TikTok перенаправляем через VPN
             return redirect(url)
     except Exception as e:
         return f"Ошибка при подключении через TOR или VPN: {e}", 500
@@ -243,12 +231,10 @@ def open_2ip_vpn():
         return redirect(url_for('buy_access', target='2ip'))
 
     try:
-        # Запускаем OpenVPN перед тем как сделать запрос
         start_vpn()
 
-        # URL для 2ip через VPN
         url = "https://2ip.ru"
-        response = requests.get(url, headers=headers)  # Отправляем запрос через VPN
+        response = requests.get(url, headers=headers)
 
         return response.text
     except Exception as e:
@@ -262,7 +248,7 @@ def admin():
         flash('У вас нет прав администратора!', 'error')
         return redirect(url_for('index'))
 
-    users = User.get_all_users()  # Получаем список пользователей в виде объектов
+    users = User.get_all_users()
 
     return render_template('admin.html', users=users)
 
@@ -274,13 +260,12 @@ def set_permissions(user_id):
         flash('У вас нет прав администратора!', 'error')
         return redirect(url_for('index'))
 
-    user = User.get_by_id(user_id)  # Загружаем объект пользователя
+    user = User.get_by_id(user_id)  
     if user:
         can_use_instagram = 'instagram' in request.form
         can_use_tiktok = 'tiktok' in request.form
-        can_use_2ip = '2ip' in request.form  # Получаем новое поле для 2ip
+        can_use_2ip = '2ip' in request.form
 
-        # Обновляем права пользователя
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
 
@@ -295,4 +280,4 @@ def set_permissions(user_id):
     return redirect(url_for('admin'))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(debug=True)
