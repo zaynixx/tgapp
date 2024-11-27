@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.nunito {
+  font-family: "Nunito", sans-serif;
+  font-optical-sizing: auto;
+}
+
+body {
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+}
+
+:root {
+  --overlay: 234, 14%, 14%;
+  --foreground-3: 227, 13%, 28%;
+  --foreground-2: 227, 16%, 17%;
+  --foreground-1: 233, 16%, 11%;
+  --primary: 228, 20%, 95%;
+  --secondary: 220, 20%, 71%;
+  --accent: 212, 100%, 55%;
+  --accent-foreground: 221, 49%, 12%;
+  --accent-border: 212, 83%, 35%;
+  --background: 233, 18%, 9%;
+  --warning: 29, 100%, 65%;
+  --success-foreground: 176, 28%, 10%;
+  --success: 144, 84%, 44%;
+  --teritary: 220, 15%, 57%;
+  --focus: 212, 100%, 55%;
+  --warning-foreground: 30, 35%, 19%;
+  --error: 4, 100%, 69%;
+  --error-foreground: 332, 23%, 11%;
+  --purple: 259, 100%, 55%;
+  --purple-foreground: 259, 90%, 79%;
+}
