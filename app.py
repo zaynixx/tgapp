@@ -4,6 +4,10 @@ from flask import Flask, request, redirect, render_template, url_for, jsonify, f
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests
+import subprocess
+import time
+
+
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_12345'  # Уникальный ключ для сессий
@@ -33,6 +37,11 @@ DB_NAME = 'users.db'
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+# Функция для запуска OpenVPN
+def start_vpn():
+    vpn_command = ["sudo", "openvpn", "--config", "cfg.ovpn"]
+    subprocess.Popen(vpn_command)
+    time.sleep(10)  # Даем время на установку соединения VPN
 # Создание базы данных и таблицы пользователей
 def create_db():
     conn = sqlite3.connect(DB_NAME)
