@@ -53,12 +53,13 @@
         });
 
         document.getElementById('open-2ip-tor').addEventListener('click', () => {
-            window.location.href = '/redirect/2ip'; // Перенаправление на 2ip через TOR
-        });
+        window.location.href = '/tor_redirect/2ip'; // Используем обработчик для TOR
+        }); 
 
         document.getElementById('open-2ip-vpn').addEventListener('click', () => {
-            window.location.href = '/open_2ip_vpn'; // Перенаправление на 2ip через VPN
+        window.location.href = '/redirect/2ip'; // Используем обработчик для VPN
         });
+
     </script>
 </body>
 </html>

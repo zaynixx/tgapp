@@ -202,7 +202,6 @@ def search_tor():
         return f"Ошибка при подключении через TOR: {e}", 500
 
 
-# Обновленные маршруты с проверкой доступа
 @app.route('/redirect/<target>')
 @login_required
 def redirect_vpn(target):
@@ -214,7 +213,7 @@ def redirect_vpn(target):
         return "Цель не найдена!", 404
 
     try:
-        start_vpn()
+        start_vpn()  # Запускаем VPN
         return redirect(url)
     except Exception as e:
         return f"Ошибка при подключении через VPN: {e}", 500
@@ -232,6 +231,22 @@ def open_2ip_vpn():
         return response.text
     except Exception as e:
         return f"Ошибка при подключении через VPN: {e}", 500
+    
+@app.route('/tor_redirect/<target>')
+@login_required
+def redirect_tor(target):
+    if not getattr(current_user, f"can_use_tor", False):
+        return "У вас нет доступа к TOR. Пожалуйста, купите доступ.", 403
+
+    url = TOR_TARGETS.get(target)
+    if not url:
+        return "Цель не найдена!", 404
+
+    try:
+        start_tor_proxy()  # Запускаем прокси TOR
+        return redirect(url)
+    except Exception as e:
+        return f"Ошибка при подключении через TOR: {e}", 500
 
 # Панель администратора
 @app.route('/admin')
