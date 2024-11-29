@@ -11,6 +11,11 @@
     />
     <link href="/style.css" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script
+      src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"
+      type="module"
+      defer
+    ></script>
     <script>
       function withOpacity(variableName) {
         return ({ opacityValue }) => {
@@ -65,52 +70,108 @@
     <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
     <title>Anonymizer</title>
   </head>
-  <body class="bg-background">
-    <main id="content" class="flex flex-col max-w-lg py-4 pb-10 mx-auto">
-    <h1 class="text-4xl font-semibold mx-auto text-center mt-4 text-secondary">Приветули</h1>
-    <div class="flex flex-col gap-2 px-4 pt-6">
-      <input
-        type="text"
-        id="search"
-        placeholder="Введите запрос для поиска"
-        class="h-10 transition-all gap-3 justify-between duration-75 flex rounded-full px-4 items-center transition-all outline-accent/70 outline outline-0 outline-offset-2 hover:outline-2 ring-2 ring-accent/20 bg-primary/5 text-secondary max-w-full hover:text-primary w-full"
-      />
-      <div class="grid grid-cols-2 gap-2 mt-4">
-        <button
-          id="search-tor"
-          class="h-12 p-2 rounded-lg bg-accent active:bg-accent/80 border border-white/20 ring-accentBorder transition-all ring-0 active:ring-4 text-primary"
-        >
-          Поиск через TOR
-        </button>
-        <button
-          id="open-tiktok"
-          class="h-12 p-2 rounded-lg bg-accent active:bg-accent/80 border border-white/20 ring-accentBorder transition-all ring-0 active:ring-4 text-primary"
-        >
-          TikTok через VPN
-        </button>
-        <button
-          id="open-instagram"
-          class="h-12 p-2 rounded-lg bg-accent active:bg-accent/80 border border-white/20 ring-accentBorder transition-all ring-0 active:ring-4 text-primary"
-        >
-          Instagram через VPN
-        </button>
-        <button
-          id="open-2ip-tor"
-          class="h-12 p-2 rounded-lg bg-accent active:bg-accent/80 border border-white/20 ring-accentBorder transition-all ring-0 active:ring-4 text-primary"
-        >
-          2ip.ru через TOR
-        </button>
-        <!-- Кнопка для 2ip через TOR -->
-        <button
-          id="open-2ip-vpn"
-          class="h-12 p-2 col-span-2 rounded-lg bg-accent active:bg-accent/80 border border-white/20 ring-accentBorder transition-all ring-0 active:ring-4 text-primary"
-        >
-          2ip.ru через VPN
-        </button>
-        <!-- Кнопка для 2ip через VPN -->
-      </div>
+  <body class="bg-background" tab="1">
+    <div class="absolute w-full h-full overflow-hidden max-w-full max-h-full">
+      <main id="content" class="relative flex h-screen overflow-clip w-[300vw] pb-10 transition-all">
+        <section class="w-full basis-1/3 justify-center flex flex-col">
+          <div class="flex flex-col max-w-lg py-4 mx-auto">
+            <h1 class="text-4xl font-semibold mx-auto text-center mt-4 text-secondary">VPN</h1>
+            <p class="text-center text-teritary font-medium max-w-[320px] mx-auto mt-2 tracking-wide px-4">
+              Оставайтесь <span class="uppercase font-semibold text-warning">заищенными</span>, используя наш
+              сервис!
+            </p>
+            <div class="grid grid-cols-2 gap-2 mt-8">
+              <button
+                id="open-tiktok"
+                class="h-12 p-2 rounded-lg bg-accent active:bg-accent/80 border border-white/20 ring-accentBorder transition-all ring-0 active:ring-4 text-primary"
+              >
+                TikTok через VPN
+              </button>
+              <button
+                id="open-instagram"
+                class="h-12 p-2 rounded-lg bg-accent active:bg-accent/80 border border-white/20 ring-accentBorder transition-all ring-0 active:ring-4 text-primary"
+              >
+                Instagram через VPN
+              </button>
+              <button
+                id="open-2ip-tor"
+                class="h-12 p-2 rounded-lg bg-accent active:bg-accent/80 border border-white/20 ring-accentBorder transition-all ring-0 active:ring-4 text-primary"
+              >
+                2ip.ru через TOR
+              </button>
+              <!-- Кнопка для 2ip через TOR -->
+              <button
+                id="open-2ip-vpn"
+                class="h-12 p-2 rounded-lg bg-accent active:bg-accent/80 border border-white/20 ring-accentBorder transition-all ring-0 active:ring-4 text-primary"
+              >
+                2ip.ru через VPN
+              </button>
+              <!-- Кнопка для 2ip через VPN -->
+            </div>
+            <dotlottie-player
+              src="/duck2.lottie"
+              background="transparent"
+              speed="1"
+              class="size-40 mx-auto mt-9"
+              direction="1"
+              playMode="normal"
+              loop
+              autoplay
+            ></dotlottie-player>
+          </div>
+        </section>
+        <section class="w-full basis-1/3 justify-center flex flex-col">
+          <div class="flex flex-col max-w-lg py-4 mx-auto">
+            <h1 class="text-4xl font-semibold mx-auto text-center mt-4 text-secondary">Поиск в TOR</h1>
+            <p class="text-center text-teritary font-medium max-w-[320px] mx-auto mt-2 tracking-wide">
+              Цпшка, снафчик, даркнет форумы, прямо в
+              <span class="uppercase font-semibold text-warning">телеграме!</span>
+            </p>
+
+            <div class="flex flex-col gap-2 px-4 pt-6">
+              <input
+                type="text"
+                id="search"
+                placeholder="Введите запрос для поиска"
+                class="h-10 transition-all mt-4 gap-3 justify-between duration-75 flex rounded-full px-4 items-center transition-all outline-accent/70 outline outline-0 outline-offset-2 hover:outline-2 ring-2 ring-accent/20 bg-primary/5 text-secondary max-w-full hover:text-primary w-full"
+              />
+              <button
+                id="search-tor"
+                class="h-12 mt-2 p-2 rounded-lg bg-accent active:bg-accent/80 border border-white/20 ring-accentBorder transition-all ring-0 active:ring-4 text-primary"
+              >
+                Поиск
+              </button>
+              <dotlottie-player
+                src="/duck.lottie"
+                background="transparent"
+                speed="1"
+                class="size-40 mx-auto mt-6"
+                direction="1"
+                playMode="normal"
+                loop
+                autoplay
+              ></dotlottie-player>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
-    </main>
+    <nav
+      class="h-16 shadow w-full fixed bottom-0 bg-overlay left-0 grid grid-cols-3 px-4 py-0.5 border-t border-foreground2"
+    >
+      <button data-tab="0" class="flex flex-col justify-center gap-1 items-center opacity-65">
+        <img src="/instagram.svg" alt="search" class="size-5 transition-all mx-auto" />
+        <span class="text-center text-white text-sm font-medium">Соц сети</span>
+      </button>
+      <button data-tab="1" class="flex flex-col justify-center gap-1 items-center opacity-65">
+        <img src="/search.svg" alt="search" class="size-5 transition-all mx-auto" />
+        <span class="text-center text-white text-sm font-medium">Поиск</span>
+      </button>
+      <button data-tab="2" class="flex flex-col justify-center gap-1 items-center opacity-65">
+        <img src="/circle-dollar-sign.svg" alt="search" class="size-5 transition-all mx-auto" />
+        <span class="text-center text-white text-sm font-medium">Баланс</span>
+      </button>
+    </nav>
 
     <script src="/script.js"></script>
   </body>

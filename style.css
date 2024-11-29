@@ -11,6 +11,7 @@ body {
   display: flex;
   min-height: 100dvh;
   flex-direction: column;
+  overflow: clip;
 }
 
 :root {
@@ -34,4 +35,28 @@ body {
   --error-foreground: 332, 23%, 11%;
   --purple: 259, 100%, 55%;
   --purple-foreground: 259, 90%, 79%;
+}
+
+body[tab="0"] main {
+  transform: translateX(0);
+}
+
+body[tab="1"] main {
+  transform: translateX(-33.33333%);
+}
+
+body[tab="2"] main {
+  transform: translateX(-66.66666%);
+}
+
+body[tab="0"] nav button[data-tab="0"] {
+  opacity: 1;
+}
+
+body[tab="1"] nav button[data-tab="1"] {
+  opacity: 1;
+}
+
+body[tab="2"] nav button[data-tab="2"] {
+  opacity: 1;
 }

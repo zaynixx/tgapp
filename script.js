@@ -23,3 +23,14 @@ document.getElementById("open-2ip-tor").addEventListener("click", () => {
 document.getElementById("open-2ip-vpn").addEventListener("click", () => {
   window.open("/open_2ip_vpn", "_blank"); // Перенаправление на 2ip через VPN
 });
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const navLinks = document.querySelectorAll('nav button');
+
+  navLinks.forEach((link) => {
+    link.addEventListener('click', () => {
+      document.body.setAttribute('tab', link.getAttribute('data-tab'));
+    });
+  });
+});
