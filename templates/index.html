@@ -9,7 +9,8 @@
       href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
       rel="stylesheet"
     />
-    <link href="/style.css" rel="stylesheet" />
+    <!-- Подключение CSS через Flask -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script
       src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"
@@ -99,17 +100,15 @@
               >
                 2ip.ru через TOR
               </button>
-              <!-- Кнопка для 2ip через TOR -->
               <button
                 id="open-2ip-vpn"
                 class="h-12 p-2 rounded-lg bg-accent active:bg-accent/80 border border-white/20 ring-accentBorder transition-all ring-0 active:ring-4 text-primary"
               >
                 2ip.ru через VPN
               </button>
-              <!-- Кнопка для 2ip через VPN -->
             </div>
             <dotlottie-player
-              src="/duck2.lottie"
+              src="{{ url_for('static', filename='animations/duck2.lottie') }}"
               background="transparent"
               speed="1"
               class="size-40 mx-auto mt-9"
@@ -142,7 +141,7 @@
                 Поиск
               </button>
               <dotlottie-player
-                src="/duck.lottie"
+                src="{{ url_for('static', filename='animations/duck.lottie') }}"
                 background="transparent"
                 speed="1"
                 class="size-40 mx-auto mt-6"
@@ -160,19 +159,20 @@
       class="h-16 shadow w-full fixed bottom-0 bg-overlay left-0 grid grid-cols-3 px-4 py-0.5 border-t border-foreground2"
     >
       <button data-tab="0" class="flex flex-col justify-center gap-1 items-center opacity-65">
-        <img src="/instagram.svg" alt="search" class="size-5 transition-all mx-auto" />
+        <img src="{{ url_for('static', filename='icons/instagram.svg') }}" alt="search" class="size-5 transition-all mx-auto" />
         <span class="text-center text-white text-sm font-medium">Соц сети</span>
       </button>
       <button data-tab="1" class="flex flex-col justify-center gap-1 items-center opacity-65">
-        <img src="/search.svg" alt="search" class="size-5 transition-all mx-auto" />
+        <img src="{{ url_for('static', filename='icons/search.svg') }}" alt="search" class="size-5 transition-all mx-auto" />
         <span class="text-center text-white text-sm font-medium">Поиск</span>
       </button>
       <button data-tab="2" class="flex flex-col justify-center gap-1 items-center opacity-65">
-        <img src="/circle-dollar-sign.svg" alt="search" class="size-5 transition-all mx-auto" />
+        <img src="{{ url_for('static', filename='icons/circle-dollar-sign.svg') }}" alt="search" class="size-5 transition-all mx-auto" />
         <span class="text-center text-white text-sm font-medium">Баланс</span>
       </button>
     </nav>
 
-    <script src="/script.js"></script>
+    <!-- JS через Flask -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
   </body>
 </html>
