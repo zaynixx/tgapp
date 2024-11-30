@@ -1,95 +1,115 @@
-<form method="POST">
-    <input type="text" name="username" placeholder="Имя пользователя" required>
-    <input type="password" name="password" placeholder="Пароль" required>
-    <button type="submit">Войти</button>
-    <label for="remember">
-        <input type="checkbox" name="remember" id="remember"> Запомнить меня
-    </label>
-</form>
-<p>Нет аккаунта? <a href="/register" id="register-link">Зарегистрироваться</a></p>
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Подключение CSS через Flask -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      function withOpacity(variableName) {
+        return ({ opacityValue }) => {
+          if (opacityValue !== undefined) {
+            return `hsla(var(${variableName}), ${opacityValue})`;
+          }
+          return `hsl(var(${variableName}))`;
+        };
+      }
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: withOpacity("--primary"),
+              teritary: withOpacity("--teritary"),
+              secondary: withOpacity("--secondary"),
+              foreground1: withOpacity("--foreground-1"),
+              foreground2: withOpacity("--foreground-2"),
+              background: withOpacity("--background"),
+              accent: withOpacity("--accent"),
+              accentForeground: withOpacity("--accent-foreground"),
+              "accent-highlight": withOpacity("--accent-highlight"),
+              accentBorder: withOpacity("--accent-border"),
+              foreground3: withOpacity("--foreground-3"),
+              orangeHightlight: withOpacity("--orange-highlight"),
+              orangeForeground: withOpacity("--orange-foreground"),
+              orangeSecondary: withOpacity("--orange-secondary"),
+              success: withOpacity("--success"),
+              successForeground: withOpacity("--success-foreground"),
+              warning: withOpacity("--warning"),
+              warningForeground: withOpacity("--warning-foreground"),
+              error: withOpacity("--error"),
+              errorForeground: withOpacity("--error-foreground"),
+              overlay: withOpacity("--overlay"),
+              focus: withOpacity("--focus"),
+              purple: withOpacity("--purple"),
+              purpleForeground: withOpacity("--purple-foreground"),
+            },
+            fontSize: {
+              xs: [12, "19.2px"],
+              sm: [14, "22.4px"],
+              base: [16, "19.2px"],
+              lg: [18, "21.6px"],
+              xl: [20, "24px"],
+              "3xl": [30, "36px"],
+              "4xl": [36, "43.2px"],
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+    <title>Login</title>
+  </head>
+  <body class="bg-background flex flex-col py-4 px-6 justify-center">
+    <a
+      href="/"
+      class="mx-auto flex items-center opacity-40 gap-2 text-white text-sm font-medium transition-all active:opacity-100 absolute top-6 left-6"
+    >
+      <img src="{{ url_for('static', filename='icons/house.svg') }}" alt="logo" class="size-6" />
+      Главная
+    </a>
+    <h1 class="text-4xl font-semibold mx-auto text-center text-secondary mt-4">Войти</h1>
 
-<style>
-    /* Основной стиль для светлой темы */
-    body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-        background-color: #fff;
-        color: #000;
-    }
-
-    form {
-        text-align: center;
-        margin-top: 50px;
-    }
-
-    input[type="text"],
-    input[type="password"] {
-        width: 80%;
-        padding: 10px;
-        margin: 10px 0;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        background-color: #fff;
-        color: #000;
-    }
-
-    button {
-        padding: 10px 20px;
-        background-color: #007BFF;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer;
-    }
-
-    button:hover {
-        background-color: #0056b3;
-    }
-
-    #register-link {
-        display: inline-block;
-        margin-top: 10px;
-        padding: 10px 15px;
-        background-color: #007BFF;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-        font-size: 14px;
-    }
-
-    #register-link:hover {
-        background-color: #0056b3;
-    }
-
-    /* Темная тема */
-    @media (prefers-color-scheme: dark) {
-        body {
-            background-color: #333;
-            color: #fff;
-        }
-
-        input[type="text"],
-        input[type="password"] {
-            background-color: #444;
-            border: 1px solid #555;
-            color: #fff;
-        }
-
-        button {
-            background-color: #0056b3;
-        }
-
-        button:hover {
-            background-color: #007BFF;
-        }
-
-        #register-link {
-            background-color: #0056b3;
-        }
-
-        #register-link:hover {
-            background-color: #007BFF;
-        }
-    }
-</style>
+    <form method="POST" class="mx-auto max-w-lg flex flex-col gap-3 w-full mt-12">
+      <input
+        type="text"
+        name="username"
+        placeholder="Имя пользователя"
+        class="h-10 transition-all duration-75 flex rounded-full px-4 items-center transition-all outline-accent/70 outline outline-0 outline-offset-2 hover:outline-2 ring-2 ring-accent/20 bg-primary/5 text-secondary max-w-full hover:text-primary w-full"
+        required
+      />
+      <input
+        type="password"
+        name="password"
+        placeholder="Пароль"
+        class="h-10 transition-all duration-75 flex rounded-full px-4 items-center transition-all outline-accent/70 outline outline-0 outline-offset-2 hover:outline-2 ring-2 ring-accent/20 bg-primary/5 text-secondary max-w-full hover:text-primary w-full"
+        required
+      />
+      <label for="remember" class="text-secondary font-medium text-sm flex items-center gap-2 items-start">
+        <input type="checkbox" name="remember" id="remember" /> Запомнить меня
+      </label>
+      <button
+        type="submit"
+        class="h-12 p-2 mt-1 rounded-lg bg-accent active:bg-accent/80 border border-white/20 ring-accentBorder transition-all ring-0 active:ring-4 text-primary"
+      >
+        Войти
+      </button>
+      <button
+        type="button"
+        class="h-12 p-2 rounded-lg bg-white/0 active:bg-white/5 transition-all text-secondary flex items-center gap-0.5 justify-center"
+      >
+        <img src="{{ url_for('static', filename='icons/telegram.svg') }}" alt="telegram" class="size-8" />
+        Войти через телеграм
+      </button>
+    </form>
+    <p class="text-sm text-teritary font-medium text-center mt-12">
+      Нет аккаунта? <a class="text-accent" href="/register" id="register-link">Зарегистрироваться</a>
+    </p>
+  </body>
+</html>

@@ -60,3 +60,34 @@ body[tab="1"] nav button[data-tab="1"] {
 body[tab="2"] nav button[data-tab="2"] {
   opacity: 1;
 }
+
+.appear-blur {
+  animation: appearBlur 0.3s ease-in-out;
+  opacity: 1;
+    backdrop-filter: blur(4px);
+}
+
+.appear-drawer {
+  animation: appearDrawer 0.3s ease-in-out;
+    transform: translateY(0%);
+}
+
+@keyframes appearBlur {
+  0% {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+}
+
+@keyframes appearDrawer {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
