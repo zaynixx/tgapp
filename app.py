@@ -252,6 +252,21 @@ def admin():
 
     return render_template('admin.html', users=users)
 
+# Эндпоинт для проверки авторизации и получения информации о текущем пользователе
+@app.route('/me')
+@login_required
+def me():
+    user_info = {
+        "id": current_user.id,
+        "username": current_user.username,
+        "is_admin": current_user.is_admin,
+        "can_use_tiktok": current_user.can_use_tiktok,
+        "can_use_instagram": current_user.can_use_instagram,
+        "can_use_2ip": current_user.can_use_2ip
+    }
+    return jsonify(user_info)
+
+
 # Настройки прав пользователей
 @app.route('/set_permissions/<int:user_id>', methods=['POST'])
 @login_required
