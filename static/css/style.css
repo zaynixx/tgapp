@@ -61,6 +61,22 @@ body[tab="2"] nav button[data-tab="2"] {
   opacity: 1;
 }
 
+.toast-aa81d3cfb.toast-error  {
+  color: hsla(4, 100%, 69%, 1);
+  background: hsla(332, 23%, 11%, 1);
+  border-width: 2px;
+  border-style: solid;
+  border-color: hsla(4, 100%, 69%, 0.1);
+}
+
+.toast-aa81d3cfb.toast-success {
+  color: hsla(144, 84%, 44%, 1);
+  background: hsla(332, 23%, 11%, 1);
+  border-width: 2px;
+  border-style: solid;
+  border-color: hsla(144, 84%, 44%, 0.1);
+}
+
 .appear-blur {
   animation: appearBlur 0.3s ease-in-out;
   opacity: 1;

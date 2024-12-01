@@ -1,5 +1,11 @@
 let loggedIn;
 
+const getUser = () => {
+  return JSON.parse(sessionStorage.getItem("user"));
+};
+
+let toaster = new Toast({});
+
 fetch("/me", {
   method: "GET",
 })
@@ -66,12 +72,22 @@ document.getElementById("open-tiktok").addEventListener("click", () => {
     openLogin();
     return;
   }
+  const user = getUser();
+  if (user.can_use_tiktok === 0) {
+    toaster.show("У вас нет доступа к TikTok", { className: "toast-error" });
+    return;
+  }
   window.location.assign("/redirect/tiktok");
 });
 
 document.getElementById("open-instagram").addEventListener("click", () => {
   if (!loggedIn) {
     openLogin();
+    return;
+  }
+  const user = getUser();
+  if (user.can_use_tiktok === 0) {
+    toaster.show("У вас нет доступа к Instagram", { className: "toast-error" });
     return;
   }
   window.location.assign("/redirect/instagram");
@@ -82,6 +98,11 @@ document.getElementById("open-2ip-tor").addEventListener("click", () => {
     openLogin();
     return;
   }
+  const user = getUser();
+  if (user.can_use_tiktok === 0) {
+    toaster.show("У вас нет доступа к 2ip", { className: "toast-error" });
+    return;
+  }
   window.location.assign("/redirect/2ip"); // Перенаправление на 2ip через TOR
 });
 
@@ -90,12 +111,19 @@ document.getElementById("open-2ip-vpn").addEventListener("click", () => {
     openLogin();
     return;
   }
+  const user = getUser();
+  if (user.can_use_tiktok === 0) {
+    toaster.show("У вас нет доступа к 2ip", { className: "toast-error" });
+    return;
+  }
   window.location.assign("/open_2ip_vpn"); // Перенаправление на 2ip через VPN
 });
 
 document.addEventListener("DOMContentLoaded", () => {
   const navLinks = document.querySelectorAll("nav button");
 
+  const tab = new URLSearchParams(window.location.search).get("tab");
+  document.body.setAttribute("tab", tab);
   navLinks.forEach((link) => {
     link.addEventListener("click", () => {
       if (!loggedIn) {

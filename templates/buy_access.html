@@ -1,82 +1,110 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Купить доступ</title>
-    <style>
-        /* Основной стиль (для светлой темы по умолчанию) */
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 20px;
-            background-color: #fff;
-            color: #000;
-        }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Подключение CSS через Flask -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      function withOpacity(variableName) {
+        return ({ opacityValue }) => {
+          if (opacityValue !== undefined) {
+            return `hsla(var(${variableName}), ${opacityValue})`;
+          }
+          return `hsl(var(${variableName}))`;
+        };
+      }
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: withOpacity("--primary"),
+              teritary: withOpacity("--teritary"),
+              secondary: withOpacity("--secondary"),
+              foreground1: withOpacity("--foreground-1"),
+              foreground2: withOpacity("--foreground-2"),
+              background: withOpacity("--background"),
+              accent: withOpacity("--accent"),
+              accentForeground: withOpacity("--accent-foreground"),
+              "accent-highlight": withOpacity("--accent-highlight"),
+              accentBorder: withOpacity("--accent-border"),
+              foreground3: withOpacity("--foreground-3"),
+              orangeHightlight: withOpacity("--orange-highlight"),
+              orangeForeground: withOpacity("--orange-foreground"),
+              orangeSecondary: withOpacity("--orange-secondary"),
+              success: withOpacity("--success"),
+              successForeground: withOpacity("--success-foreground"),
+              warning: withOpacity("--warning"),
+              warningForeground: withOpacity("--warning-foreground"),
+              error: withOpacity("--error"),
+              errorForeground: withOpacity("--error-foreground"),
+              overlay: withOpacity("--overlay"),
+              focus: withOpacity("--focus"),
+              purple: withOpacity("--purple"),
+              purpleForeground: withOpacity("--purple-foreground"),
+            },
+            fontSize: {
+              xs: [12, "19.2px"],
+              sm: [14, "22.4px"],
+              base: [16, "19.2px"],
+              lg: [18, "21.6px"],
+              xl: [20, "24px"],
+              "3xl": [30, "36px"],
+              "4xl": [36, "43.2px"],
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+    <title>Login</title>
+  </head>
+  <body class="bg-background flex flex-col py-4 px-6 justify-center">
+    <a
+      href="/"
+      class="mx-auto flex items-center opacity-40 gap-2 text-white text-sm font-medium transition-all active:opacity-100 absolute top-6 left-6"
+    >
+      <img src="{{ url_for('static', filename='icons/house.svg') }}" alt="logo" class="size-6" />
+      Главная
+    </a>
+    <h1 class="text-4xl font-semibold mx-auto text-center text-secondary mt-4">Ошибка</h1>
+    <p class="text-teritary text-center mt-4 max-w-[420px] mx-auto">
+      Для доступа к этой странице необходимо пополнить баланс на {{ price }} рублей
+    </p>
 
-        .container {
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            display: inline-block;
-            text-align: left;
-            background-color: #fff;
-            color: #000;
-        }
-
-        button {
-            padding: 10px 20px;
-            margin-top: 20px;
-            font-size: 16px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        a {
-            text-decoration: none;
-            color: #007BFF;
-        }
-
-        /* Темная тема */
-        @media (prefers-color-scheme: dark) {
-            body {
-                background-color: #333;
-                color: #fff;
-            }
-
-            .container {
-                background-color: #444;
-                color: #fff;
-                border: 1px solid #555;
-            }
-
-            button {
-                background-color: #0056b3;
-            }
-
-            button:hover {
-                background-color: #007BFF;
-            }
-
-            a {
-                color: #5C9BCF;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Доступ к {{ target }}</h1>
-        <p>Для использования этой функции, пожалуйста, купите доступ за {{ price }} рублей.</p>
-        <button onclick="alert('Покупка пока не реализована!')">Купить доступ</button>
-        <br>
-        <a href="/" style="display: block; margin-top: 10px;">Вернуться на главную</a>
+    <div class="flex flex-col gap-2 px-4 pt-6 w-[288px] mx-auto">
+      <a
+        href="/?tab=2"
+        id="top-up-stars"
+        class="h-12 mt-2 p-2 rounded-lg bg-accent active:bg-accent/80 border border-white/20 ring-accentBorder transition-all ring-0 active:ring-4 text-primary text-center"
+      >
+        Пополнить
+      </a>
+      <a
+        href="/"
+        id="top-up-card"
+        class="h-12 p-2 rounded-lg bg-white/0 active:bg-white/5 transition-all text-secondary flex items-center gap-0.5 justify-center"
+      >
+        Назад
+      </a>
     </div>
-</body>
+
+    <dotlottie-player
+      src="{{ url_for('static', filename='animations/duck3.lottie') }}"
+      background="transparent"
+      speed="1"
+      class="size-40 mx-auto mt-6"
+      direction="1"
+      playMode="normal"
+      loop
+      autoplay
+    ></dotlottie-player>
+  </body>
 </html>
