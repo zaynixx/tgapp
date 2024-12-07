@@ -262,7 +262,8 @@
           <button
             type="button"
             class="h-12 p-2 rounded-lg bg-white/0 active:bg-white/5 transition-all text-secondary flex items-center gap-0.5 justify-center"
-          >
+            id="telegram-login"
+            >
             <img src="{{ url_for('static', filename='icons/telegram.svg') }}" alt="telegram" class="size-8" />
             Войти через телеграм
           </button>
@@ -275,5 +276,6 @@
 
     <!-- JS через Flask -->
     <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/telegram-login.js') }}" defer></script>
   </body>
 </html>
