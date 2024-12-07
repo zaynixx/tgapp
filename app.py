@@ -245,16 +245,23 @@ def search_duckduckgo():
                 'link': result['href']
             })
 
+        if not search_results:
+            flash("Не удалось найти результаты поиска.", "warning")
+            return redirect(url_for('index'))
+
         # Отображаем результаты на странице
         return render_template(
             'search_results_duckduckgo.html',
             results=search_results,
             query=query
         )
-    except Exception as e:
-        # Отладочная информация
-        flash(f"Ошибка при подключении через TOR или обработке данных: {e}", "error")
+    except requests.exceptions.RequestException as e:
+        flash(f"Ошибка подключения к DuckDuckGo: {e}", "error")
         return redirect(url_for('index'))
+    except Exception as e:
+        flash(f"Неожиданная ошибка: {e}", "error")
+        return redirect(url_for('index'))
+
 
 
 @app.route('/visit_link', methods=['GET'])

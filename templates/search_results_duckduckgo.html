@@ -7,13 +7,15 @@
 </head>
 <body>
     <h1>Результаты поиска для "{{ query }}"</h1>
+    {% if results %}
     <ul>
         {% for result in results %}
-        <li>
-            <a href="{{ result.link }}" target="_blank">{{ result.title }}</a>
-        </li>
+        <li><a href="{{ result.link }}" target="_blank">{{ result.title }}</a></li>
         {% endfor %}
     </ul>
+    {% else %}
+    <p>Результатов не найдено.</p>
+    {% endif %}
     <a href="{{ url_for('index') }}">Назад на главную</a>
 </body>
 </html>
