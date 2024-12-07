@@ -5,6 +5,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests
 import time
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_12345'  # Уникальный ключ для сессий
@@ -185,7 +186,7 @@ def logout():
     return redirect(url_for('login'))
 
 # Поиск через TOR
-@app.route('/search')
+@app.route('/search', methods=['GET'])
 @login_required
 def search_tor():
     query = request.args.get('query', '')
@@ -194,8 +195,21 @@ def search_tor():
 
     search_url = f"http://juhanurmihxlp77nkq76byazcldy2hlmovfu2epvl5ankdibsot4csyd.onion/search?q={query}"
     try:
+        # Отправляем запрос через TOR-прокси
         response = requests.get(search_url, proxies=TOR_PROXY, headers=headers)
-        return response.text
+        response.raise_for_status()
+        
+        # Парсим результаты с помощью BeautifulSoup
+        soup = BeautifulSoup(response.text, 'html.parser')
+        results = []
+        for result in soup.select('.result'):  # Измените селектор на подходящий для Ahmia
+            title = result.select_one('.title').text.strip() if result.select_one('.title') else "No Title"
+            link = result.select_one('a')['href'] if result.select_one('a') else "#"
+            snippet = result.select_one('.snippet').text.strip() if result.select_one('.snippet') else "No Description"
+            results.append({'title': title, 'link': link, 'snippet': snippet})
+        
+        # Рендерим результаты в вашем шаблоне
+        return render_template('search_results.html', results=results, query=query)
     except Exception as e:
         return f"Ошибка при подключении через TOR: {e}", 500
 
