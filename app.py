@@ -6,6 +6,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import requests
 import time
 from bs4 import BeautifulSoup
+from urllib.parse import urljoin
+
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_12345'  # Уникальный ключ для сессий
