@@ -247,10 +247,11 @@ def search_duckduckgo():
 
         # Отображаем результаты на странице
         return render_template(
-            'search_results1.html', 
+            'search_results_duckduckgo.html', 
             results=search_results, 
             query=query
         )
+
     except Exception as e:
         flash(f"Ошибка при подключении через TOR: {e}", "error")
         return redirect(url_for('index'))
