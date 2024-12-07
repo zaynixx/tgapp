@@ -9,7 +9,7 @@
     <ul>
         {% for result in results %}
         <li>
-            <a href="{{ result.link }}" target="_blank">{{ result.title }}</a>
+            <a href="{{ url_for('visit_link', url=result.link) }}" target="_blank">{{ result.title }}</a>
             <p>{{ result.snippet }}</p>
         </li>
         {% endfor %}

@@ -185,7 +185,6 @@ def logout():
     flash('Выход выполнен!', 'success')
     return redirect(url_for('login'))
 
-# Поиск через TOR
 @app.route('/search', methods=['GET'])
 @login_required
 def search_tor():
@@ -198,18 +197,37 @@ def search_tor():
         # Отправляем запрос через TOR-прокси
         response = requests.get(search_url, proxies=TOR_PROXY, headers=headers)
         response.raise_for_status()
-        
-        # Парсим результаты с помощью BeautifulSoup
+
+        # Парсим результаты
         soup = BeautifulSoup(response.text, 'html.parser')
         results = []
-        for result in soup.select('.result'):  # Измените селектор на подходящий для Ahmia
-            title = result.select_one('.title').text.strip() if result.select_one('.title') else "No Title"
-            link = result.select_one('a')['href'] if result.select_one('a') else "#"
+        for result in soup.select('.result'):  # Проверьте точный селектор для Ahmia
+            title_tag = result.select_one('a')
+            title = title_tag.text.strip() if title_tag else "No Title"
+            link = urljoin(search_url, title_tag['href']) if title_tag and 'href' in title_tag.attrs else "#"
             snippet = result.select_one('.snippet').text.strip() if result.select_one('.snippet') else "No Description"
             results.append({'title': title, 'link': link, 'snippet': snippet})
         
-        # Рендерим результаты в вашем шаблоне
+        # Рендерим результаты в шаблоне
         return render_template('search_results.html', results=results, query=query)
+    except Exception as e:
+        return f"Ошибка при подключении через TOR: {e}", 500
+
+
+@app.route('/visit_link', methods=['GET'])
+@login_required
+def visit_link():
+    target_url = request.args.get('url')
+    if not target_url:
+        return "URL не указан!", 400
+
+    try:
+        # Выполняем запрос к целевому сайту через TOR-прокси
+        response = requests.get(target_url, proxies=TOR_PROXY, headers=headers)
+        response.raise_for_status()
+
+        # Возвращаем содержимое сайта
+        return response.text
     except Exception as e:
         return f"Ошибка при подключении через TOR: {e}", 500
 
