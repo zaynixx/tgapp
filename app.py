@@ -216,6 +216,46 @@ def search_tor():
         return f"Ошибка при подключении через TOR: {e}", 500
 
 
+@app.route('/search_duckduckgo', methods=['GET'])
+@login_required
+def search_duckduckgo():
+    query = request.args.get('query', '')
+    if not query:
+        flash("Введите запрос для поиска!", "error")
+        return redirect(url_for('index'))
+
+    duckduckgo_url = "https://html.duckduckgo.com/html/"
+    try:
+        # Запрос через DuckDuckGo HTML
+        response = requests.post(
+            duckduckgo_url,
+            data={"q": query},
+            headers=headers,
+            proxies=TOR_PROXY,
+            timeout=10
+        )
+        response.raise_for_status()
+
+        # Парсим результаты
+        soup = BeautifulSoup(response.text, 'html.parser')
+        search_results = []
+        for result in soup.select('.result__a'):
+            search_results.append({
+                'title': result.text,
+                'link': result['href']
+            })
+
+        # Отображаем результаты на странице
+        return render_template(
+            'search_results1.html', 
+            results=search_results, 
+            query=query
+        )
+    except Exception as e:
+        flash(f"Ошибка при подключении через TOR: {e}", "error")
+        return redirect(url_for('index'))
+
+
 @app.route('/visit_link', methods=['GET'])
 @login_required
 def visit_link():
