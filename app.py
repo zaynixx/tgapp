@@ -6,11 +6,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import requests
 import time
 from bs4 import BeautifulSoup
+import logging
 from urllib.parse import urljoin
 
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_12345'  # Уникальный ключ для сессий
+
+logging.basicConfig(level=logging.DEBUG)
 
 # Конфигурация для работы с TOR через SOCKS5
 TOR_PROXY = {
@@ -187,33 +190,58 @@ def logout():
     flash('Выход выполнен!', 'success')
     return redirect(url_for('login'))
 
-@app.route('/search', methods=['GET'])
+@app.route('/search_duckduckgo', methods=['GET'])
 @login_required
-def search_tor():
+def search_duckduckgo():
     query = request.args.get('query', '')
     if not query:
-        return "Введите запрос для поиска!", 400
+        flash("Введите запрос для поиска!", "error")
+        return redirect(url_for('index'))
 
-    search_url = f"http://juhanurmihxlp77nkq76byazcldy2hlmovfu2epvl5ankdibsot4csyd.onion/search?q={query}"
+    duckduckgo_url = "https://html.duckduckgo.com/html/"
     try:
-        # Отправляем запрос через TOR-прокси
-        response = requests.get(search_url, proxies=TOR_PROXY, headers=headers)
+        logging.debug(f"Поиск по запросу: {query}")
+
+        # Запрос через DuckDuckGo HTML
+        response = requests.post(
+            duckduckgo_url,
+            data={"q": query},
+            headers=headers,
+            proxies=TOR_PROXY,
+            timeout=10
+        )
         response.raise_for_status()
+        logging.debug(f"Ответ DuckDuckGo: {response.status_code}")
 
         # Парсим результаты
         soup = BeautifulSoup(response.text, 'html.parser')
-        results = []
-        for result in soup.select('.result'):  # Проверьте точный селектор для Ahmia
-            title_tag = result.select_one('a')
-            title = title_tag.text.strip() if title_tag else "No Title"
-            link = urljoin(search_url, title_tag['href']) if title_tag and 'href' in title_tag.attrs else "#"
-            snippet = result.select_one('.snippet').text.strip() if result.select_one('.snippet') else "No Description"
-            results.append({'title': title, 'link': link, 'snippet': snippet})
-        
-        # Рендерим результаты в шаблоне
-        return render_template('search_results.html', results=results, query=query)
+        search_results = []
+        for result in soup.select('.result__a'):
+            search_results.append({
+                'title': result.text,
+                'link': result['href']
+            })
+
+        logging.debug(f"Найдено результатов: {len(search_results)}")
+
+        if not search_results:
+            flash("Не удалось найти результаты поиска.", "warning")
+            return redirect(url_for('index'))
+
+        # Отображаем результаты на странице
+        return render_template(
+            'search_results_duckduckgo.html',
+            results=search_results,
+            query=query
+        )
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Ошибка подключения к DuckDuckGo: {e}")
+        flash(f"Ошибка подключения к DuckDuckGo: {e}", "error")
+        return redirect(url_for('index'))
     except Exception as e:
-        return f"Ошибка при подключении через TOR: {e}", 500
+        logging.error(f"Неожиданная ошибка: {e}")
+        flash(f"Неожиданная ошибка: {e}", "error")
+        return redirect(url_for('index'))
 
 
 @app.route('/search_duckduckgo', methods=['GET'])
