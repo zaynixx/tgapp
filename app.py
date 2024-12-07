@@ -244,53 +244,6 @@ def search_duckduckgo():
         return redirect(url_for('index'))
 
 
-@app.route('/search_duckduckgo', methods=['GET'])
-@login_required
-def search_duckduckgo():
-    query = request.args.get('query', '')
-    if not query:
-        flash("Введите запрос для поиска!", "error")
-        return redirect(url_for('index'))
-
-    duckduckgo_url = "https://html.duckduckgo.com/html/"
-    try:
-        # Запрос через DuckDuckGo HTML
-        response = requests.post(
-            duckduckgo_url,
-            data={"q": query},
-            headers=headers,
-            proxies=TOR_PROXY,
-            timeout=10
-        )
-        response.raise_for_status()
-
-        # Парсим результаты
-        soup = BeautifulSoup(response.text, 'html.parser')
-        search_results = []
-        for result in soup.select('.result__a'):
-            search_results.append({
-                'title': result.text,
-                'link': result['href']
-            })
-
-        if not search_results:
-            flash("Не удалось найти результаты поиска.", "warning")
-            return redirect(url_for('index'))
-
-        # Отображаем результаты на странице
-        return render_template(
-            'search_results_duckduckgo.html',
-            results=search_results,
-            query=query
-        )
-    except requests.exceptions.RequestException as e:
-        flash(f"Ошибка подключения к DuckDuckGo: {e}", "error")
-        return redirect(url_for('index'))
-    except Exception as e:
-        flash(f"Неожиданная ошибка: {e}", "error")
-        return redirect(url_for('index'))
-
-
 
 @app.route('/visit_link', methods=['GET'])
 @login_required
