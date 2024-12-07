@@ -10,9 +10,10 @@
     <ul>
         {% for result in results %}
         <li>
-            <a href="{{ result.link }}">{{ result.title }}</a>
+            <a href="{{ result.link }}" target="_blank">{{ result.title }}</a>
         </li>
         {% endfor %}
     </ul>
+    <a href="{{ url_for('index') }}">Назад на главную</a>
 </body>
 </html>
