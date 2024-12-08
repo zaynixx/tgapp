@@ -109,10 +109,9 @@
                 2ip.ru через VPN
               </button>
             </div>
-            <form action="{{ url_for('search_duckduckgo') }}" method="GET">
-              <label for="query">Введите запрос для поиска через DuckDuckGo:</label>
-              <input type="text" id="query" name="query" required>
-              <button type="submit">Искать</button>
+            <form class="flex gap-2 mt-4 items-center" action="{{ url_for('search_duckduckgo') }}" method="GET">
+              <input placeholder="Запрос для поиска" type="text" id="query" name="query" class="h-10 transition-all duration-75 flex rounded-full px-4 items-center transition-all outline-accent/70 outline outline-0 outline-offset-2 hover:outline-2 ring-2 ring-accent/20 bg-primary/5 text-secondary max-w-full hover:text-primary w-full" required>
+              <button type="submit" class="h-10 px-4 rounded-lg bg-warning active:bg-warning/80 border border-white/20 ring-warningForeground transition-all ring-0 active:ring-4 text-primary">Искать</button>
           </form>          
             <dotlottie-player
               src="{{ url_for('static', filename='animations/duck2.lottie') }}"
