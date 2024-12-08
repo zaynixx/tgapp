@@ -1,18 +1,81 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Подключение CSS через Flask -->
+    <link href="{{ url_for('static', filename='css/results.css') }}" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      function withOpacity(variableName) {
+        return ({ opacityValue }) => {
+          if (opacityValue !== undefined) {
+            return `hsla(var(${variableName}), ${opacityValue})`;
+          }
+          return `hsl(var(${variableName}))`;
+        };
+      }
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: withOpacity("--primary"),
+              teritary: withOpacity("--teritary"),
+              secondary: withOpacity("--secondary"),
+              foreground1: withOpacity("--foreground-1"),
+              foreground2: withOpacity("--foreground-2"),
+              background: withOpacity("--background"),
+              accent: withOpacity("--accent"),
+              accentForeground: withOpacity("--accent-foreground"),
+              "accent-highlight": withOpacity("--accent-highlight"),
+              accentBorder: withOpacity("--accent-border"),
+              foreground3: withOpacity("--foreground-3"),
+              orangeHightlight: withOpacity("--orange-highlight"),
+              orangeForeground: withOpacity("--orange-foreground"),
+              orangeSecondary: withOpacity("--orange-secondary"),
+              success: withOpacity("--success"),
+              successForeground: withOpacity("--success-foreground"),
+              warning: withOpacity("--warning"),
+              warningForeground: withOpacity("--warning-foreground"),
+              error: withOpacity("--error"),
+              errorForeground: withOpacity("--error-foreground"),
+              overlay: withOpacity("--overlay"),
+              focus: withOpacity("--focus"),
+              purple: withOpacity("--purple"),
+              purpleForeground: withOpacity("--purple-foreground"),
+            },
+            fontSize: {
+              xs: [12, "19.2px"],
+              sm: [14, "22.4px"],
+              base: [16, "19.2px"],
+              lg: [18, "21.6px"],
+              xl: [20, "24px"],
+              "3xl": [30, "36px"],
+              "4xl": [36, "43.2px"],
+            },
+          },
+        },
+      };
+    </script>
     <title>Результаты поиска</title>
 </head>
-<body>
-    <h1>Результаты поиска для: {{ query }}</h1>
-    <ul>
+<body class="bg-background">
+    <div class="flex flex-col max-w-lg py-4 mx-auto px-4">
+    <h1 class="text-4xl font-semibold mx-auto text-center mt-4 text-secondary">Результаты поиска для: {{ query }}</h1>
+    <ul class="mt-4 flex flex-col gap-3">
         {% for result in results %}
-        <li>
-            <a href="{{ url_for('visit_link', url=result.link) }}" target="_blank">{{ result.title }}</a>
-            <p>{{ result.snippet }}</p>
+        <li class="flex gap-1 flex-col">
+            <a class="text-accent font-semibold text-sm" href="{{ url_for('visit_link', url=result.link) }}">{{ result.title }}</a>
+            <p class="text-xs font-medium text-secondary">{{ result.snippet }}</p>
         </li>
         {% endfor %}
     </ul>
+    </div>
 </body>
 </html>

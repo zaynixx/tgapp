@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const navLinks = document.querySelectorAll("nav button");
 
   const tab = new URLSearchParams(window.location.search).get("tab");
-  document.body.setAttribute("tab", tab);
+  document.body.setAttribute("tab", tab ?? 1);
   navLinks.forEach((link) => {
     link.addEventListener("click", () => {
       if (!loggedIn) {
