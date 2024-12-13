@@ -192,7 +192,7 @@ def update_balance():
 
     if not login or not amount:
         print("Недопустимые данные: login или amount отсутствуют")
-        return
+        return jsonify({"error": "Недопустимые данные: login или amount отсутствуют"}), 400
 
     # Обновление баланса пользователя в базе данных
     conn = sqlite3.connect(DB_NAME)
