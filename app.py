@@ -7,6 +7,7 @@ import requests
 import time
 from bs4 import BeautifulSoup
 import logging
+import random
 from urllib.parse import urljoin
 
 
@@ -28,9 +29,22 @@ VPN_TARGETS = {
     "2ip": "https://2ip.ru"
 }
 
+
+
+USER_AGENTS = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:90.0) Gecko/20100101 Firefox/90.0',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/91.0.864.59',
+]
+
+def get_random_user_agent():
+    return random.choice(USER_AGENTS)
+
 # Заголовки для HTTP-запросов
 headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    'User-Agent': get_random_user_agent()
 }
 
 # Конфигурация базы данных
@@ -45,6 +59,21 @@ def start_vpn():
     vpn_command = ["sudo", "openvpn", "--config", "cfg.ovpn"]
     subprocess.Popen(vpn_command)
     time.sleep(10)  # Даем время на установку соединения VPN
+
+def make_request(url, method="GET", data=None, proxies=None):
+    headers = {
+        'User-Agent': get_random_user_agent()
+    }
+    try:
+        if method == "GET":
+            response = requests.get(url, headers=headers, proxies=proxies, timeout=10)
+        elif method == "POST":
+            response = requests.post(url, headers=headers, data=data, proxies=proxies, timeout=10)
+        response.raise_for_status()
+        return response
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Ошибка при запросе к {url}: {e}")
+        raise
 
 # Создание базы данных и таблицы пользователей
 def create_db():
@@ -203,17 +232,12 @@ def search_duckduckgo():
         logging.debug(f"Поиск по запросу: {query}")
 
         # Запрос через DuckDuckGo HTML
-        response = requests.post(
-            duckduckgo_url,
+        response = make_request(
+            url=duckduckgo_url,
+            method="POST",
             data={"q": query},
-            headers=headers,
-            proxies=TOR_PROXY,
-            timeout=10
+            proxies=TOR_PROXY
         )
-        response.raise_for_status()
-        logging.debug(f"Ответ DuckDuckGo: {response.status_code}")
-
-        # Парсим результаты
         soup = BeautifulSoup(response.text, 'html.parser')
         search_results = []
         for result in soup.select('.result__a'):
@@ -223,25 +247,20 @@ def search_duckduckgo():
             })
 
         logging.debug(f"Найдено результатов: {len(search_results)}")
-
         if not search_results:
             flash("Не удалось найти результаты поиска.", "warning")
             return redirect(url_for('index'))
 
-        # Отображаем результаты на странице
         return render_template(
             'search_results_duckduckgo.html',
             results=search_results,
             query=query
         )
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Ошибка подключения к DuckDuckGo: {e}")
-        flash(f"Ошибка подключения к DuckDuckGo: {e}", "error")
-        return redirect(url_for('index'))
     except Exception as e:
-        logging.error(f"Неожиданная ошибка: {e}")
-        flash(f"Неожиданная ошибка: {e}", "error")
+        logging.error(f"Ошибка поиска: {e}")
+        flash(f"Ошибка поиска: {e}", "error")
         return redirect(url_for('index'))
+
 
 
 
