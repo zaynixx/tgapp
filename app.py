@@ -181,6 +181,14 @@ def buy_access(target):
     price = 666  # Цена для доступа
     return render_template('buy_access.html', target=target, price=price)
 
+@app.route('/balance')
+def balance():
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("SELECT balance FROM user WHERE id = ?", (user_id,))
+    balance = cursor.fetchone()[0]
+    return render_template('template.html', balance=balance)
+
 @app.route('/update_balance', methods=['POST'])
 def update_balance():
     print("update_balance вызвана")
