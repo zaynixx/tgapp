@@ -187,12 +187,16 @@ def balance():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
 
-    # Assuming you have a way to get the user_id
-    # For example, from the session or request
-    user_id = session.get('user_id')
+    user_id = current_user.id
 
     cursor.execute("SELECT balance FROM user WHERE id = ?", (user_id,))
-    balance = cursor.fetchone()[0]
+    result = cursor.fetchone()
+
+    if result is None:
+        # Если результатов нет, верните сообщение об ошибке или значение по умолчанию
+        return "Баланс не найден"
+
+    balance = result[0]
     return render_template('template.html', balance=balance)
 
 @app.route('/update_balance', methods=['POST'])
