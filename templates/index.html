@@ -163,16 +163,17 @@
           <div class="flex flex-col max-w-lg py-4 mx-auto">
             <h1 class="text-4xl font-semibold mx-auto text-center mt-4 text-secondary">Баланс</h1>
             <p class="text-center text-teritary font-medium max-w-[320px] mx-auto mt-2 tracking-wide">
-              Ваша баланс:
+              Ваш баланс:
             </p>
             <span class="uppercase font-bold text-center text-3xl text-warning">{{ balance }}₽</span>
             <div class="flex flex-col gap-2 px-4 pt-6 min-w-[288px]">
               <button
-                id="top-up-stars"
-                class="h-12 mt-2 p-2 rounded-lg bg-accent active:bg-accent/80 border border-white/20 ring-accentBorder transition-all ring-0 active:ring-4 text-primary"
-              >
-                Пополнить звездами
-              </button>
+              id="top-up-stars"
+              class="h-12 mt-2 p-2 rounded-lg bg-accent active:bg-accent/80 border border-white/20 ring-accentBorder transition-all ring-0 active:ring-4 text-primary"
+              onclick="window.open('https://t.me/Anonymizer_login_bot', '_blank')"
+            >
+              Пополнить звездами
+            </button>
               <button
                 id="top-up-card"
                 class="h-12 p-2 rounded-lg bg-white/0 active:bg-white/5 transition-all text-secondary flex items-center gap-0.5 justify-center"
