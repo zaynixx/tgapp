@@ -3,6 +3,7 @@ import sqlite3
 from flask import Flask, request, redirect, render_template, url_for, jsonify, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_sqlalchemy import SQLAlchemy
 import requests
 import time
 from bs4 import BeautifulSoup
@@ -88,7 +89,8 @@ def create_db():
         is_admin INTEGER DEFAULT 0,
         can_use_tiktok INTEGER DEFAULT 0,
         can_use_instagram INTEGER DEFAULT 0,
-        can_use_2ip INTEGER DEFAULT 0  -- Новое поле для 2ip
+        can_use_2ip INTEGER DEFAULT 0,
+        balance INTEGER DEFAULT 0  -- Новое поле для баланса
     )
     ''')
 
@@ -180,26 +182,19 @@ def buy_access(target):
 
 @app.route('/update_balance', methods=['POST'])
 def update_balance():
-    user_id = request.json.get('user_id')
-    amount = request.json.get('amount')
+    data = request.get_json()
+    login = data['login']
+    amount = data['amount']
 
-    if not user_id or not amount:
-        return jsonify({"error": "Invalid data"}), 400
-
+    # Обновление баланса пользователя в базе данных
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-
-    cursor.execute('SELECT * FROM user WHERE id = ?', (user_id,))
-    user_data = cursor.fetchone()
-    if not user_data:
-        return jsonify({"error": "User not found"}), 404
-
-    new_balance = user_data[6] + amount  # Предполагаем, что balance - это 7-й столбец
-    cursor.execute('UPDATE user SET balance = ? WHERE id = ?', (new_balance, user_id))
+    cursor.execute("UPDATE user SET balance = balance + ? WHERE username = ?", (amount, login))
     conn.commit()
     conn.close()
 
-    return jsonify({"message": "Balance updated successfully"}), 200
+    # Отправка ответа на бота
+    return jsonify({'message': 'Баланс обновлен успешно!'}), 200
 
 
 # Регистрация
