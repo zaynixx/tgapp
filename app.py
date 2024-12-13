@@ -76,7 +76,6 @@ def make_request(url, method="GET", data=None, proxies=None):
         raise
 
 # Создание базы данных и таблицы пользователей
-# Создание базы данных и таблицы пользователей
 def create_db():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
@@ -86,17 +85,15 @@ def create_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
-        balance REAL DEFAULT 0,  
-        is_admin INTEGER DEFAULT 0, 
+        is_admin INTEGER DEFAULT 0,
         can_use_tiktok INTEGER DEFAULT 0,
         can_use_instagram INTEGER DEFAULT 0,
-        can_use_2ip INTEGER DEFAULT 0
+        can_use_2ip INTEGER DEFAULT 0  -- Новое поле для 2ip
     )
-''')
+    ''')
 
     conn.commit()
     conn.close()
-
 
 # Создаем таблицу при старте приложения
 with app.app_context():
