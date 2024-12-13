@@ -174,7 +174,21 @@ def load_user(user_id):
 # Главная страница
 @app.route('/')
 def index():
-    return render_template('index.html')
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+
+    user_id = current_user.id
+
+    cursor.execute("SELECT balance FROM user WHERE id = ?", (user_id,))
+    result = cursor.fetchone()
+
+    if result is None:
+        # Если результатов нет, верните сообщение об ошибке или значение по умолчанию
+        balance = "Баланс не найден"
+    else:
+        balance = result[0]
+
+    return render_template('index.html', balance=balance)
 
 @app.route('/buy_access/<target>', methods=['GET'])
 @login_required
