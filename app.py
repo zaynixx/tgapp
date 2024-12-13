@@ -76,6 +76,7 @@ def make_request(url, method="GET", data=None, proxies=None):
         raise
 
 # Создание базы данных и таблицы пользователей
+# Создание базы данных и таблицы пользователей
 def create_db():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
@@ -85,15 +86,17 @@ def create_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
+        balance REAL DEFAULT 0,  -- Новое поле для баланса
         is_admin INTEGER DEFAULT 0,
         can_use_tiktok INTEGER DEFAULT 0,
         can_use_instagram INTEGER DEFAULT 0,
-        can_use_2ip INTEGER DEFAULT 0  -- Новое поле для 2ip
+        can_use_2ip INTEGER DEFAULT 0
     )
     ''')
 
     conn.commit()
     conn.close()
+
 
 # Создаем таблицу при старте приложения
 with app.app_context():
@@ -171,6 +174,29 @@ def load_user(user_id):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/update_balance', methods=['POST'])
+def update_balance():
+    # Получаем данные из запроса
+    username = request.form['username']
+    amount = float(request.form['amount'])
+
+    # Проверяем, существует ли пользователь с таким логином
+    user = User.get_by_username(username)
+    if user:
+        # Обновляем баланс пользователя в базе данных
+        conn = sqlite3.connect(DB_NAME)
+        cursor = conn.cursor()
+
+        cursor.execute('''
+        UPDATE user SET balance = balance + ? WHERE username = ?
+        ''', (amount, username))
+        conn.commit()
+        conn.close()
+
+        return jsonify({"status": "success", "message": "Balance updated"})
+    else:
+        return jsonify({"status": "error", "message": "User not found"})
 
 @app.route('/buy_access/<target>', methods=['GET'])
 @login_required
