@@ -103,14 +103,15 @@ with app.app_context():
 
 # Модели базы данных и логика пользователя
 class User(UserMixin):
-    def __init__(self, id, username, password, is_admin=False, can_use_tiktok=False, can_use_instagram=False, can_use_2ip=False):
+    def __init__(self, id, username, password, is_admin=False, can_use_tiktok=False, can_use_instagram=False, can_use_2ip=False, balance=None):
         self.id = id
         self.username = username
         self.password = password
         self.is_admin = is_admin
         self.can_use_tiktok = can_use_tiktok
         self.can_use_instagram = can_use_instagram
-        self.can_use_2ip = can_use_2ip 
+        self.can_use_2ip = can_use_2ip
+        self.balance = balance
 
     @staticmethod
     def get_by_id(user_id):
