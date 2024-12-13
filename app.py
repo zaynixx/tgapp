@@ -92,7 +92,7 @@ def create_db():
         can_use_instagram INTEGER DEFAULT 0,
         can_use_2ip INTEGER DEFAULT 0
     )
-    ''')
+''')
 
     conn.commit()
     conn.close()
