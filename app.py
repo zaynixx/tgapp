@@ -180,18 +180,25 @@ def buy_access(target):
     price = 666  # Цена для доступа
     return render_template('buy_access.html', target=target, price=price)
 
-@app.route('/update_balance', methods=['POST'])
 def update_balance():
+    print("update_balance вызвана")
     data = request.get_json()
+    print("data:", data)
     login = data['login']
     amount = data['amount']
+    print("login:", login)
+    print("amount:", amount)
 
     # Обновление баланса пользователя в базе данных
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
+    print("cursor создан")
     cursor.execute("UPDATE user SET balance = balance + ? WHERE username = ?", (amount, login))
+    print("запрос выполнен")
     conn.commit()
+    print("изменения сохранены")
     conn.close()
+    print("соединение закрыто")
 
     # Отправка ответа на бота
     return jsonify({'message': 'Баланс обновлен успешно!'}), 200
