@@ -3,7 +3,8 @@ import sqlite3
 from flask import Flask, request, redirect, render_template, url_for, jsonify, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_sqlalchemy import SQLAlchemy
+from flask_login import current_user
+from flask import session
 import requests
 import time
 from bs4 import BeautifulSoup
@@ -185,6 +186,11 @@ def buy_access(target):
 def balance():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
+
+    # Assuming you have a way to get the user_id
+    # For example, from the session or request
+    user_id = session.get('user_id')
+
     cursor.execute("SELECT balance FROM user WHERE id = ?", (user_id,))
     balance = cursor.fetchone()[0]
     return render_template('template.html', balance=balance)
