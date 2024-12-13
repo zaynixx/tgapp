@@ -86,8 +86,8 @@ def create_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
-        balance REAL DEFAULT 0,  -- Новое поле для баланса
-        is_admin INTEGER DEFAULT 0,
+        balance REAL DEFAULT 0,  
+        is_admin INTEGER DEFAULT 0, 
         can_use_tiktok INTEGER DEFAULT 0,
         can_use_instagram INTEGER DEFAULT 0,
         can_use_2ip INTEGER DEFAULT 0
