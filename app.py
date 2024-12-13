@@ -180,6 +180,7 @@ def buy_access(target):
     price = 666  # Цена для доступа
     return render_template('buy_access.html', target=target, price=price)
 
+@app.route('/update_balance', methods=['POST'])
 def update_balance():
     print("update_balance вызвана")
     data = request.get_json()
