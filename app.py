@@ -185,10 +185,14 @@ def update_balance():
     print("update_balance вызвана")
     data = request.get_json()
     print("data:", data)
-    login = data['login']
-    amount = data['amount']
+    login = data.get('login')
+    amount = data.get('amount')
     print("login:", login)
     print("amount:", amount)
+
+    if not login or not amount:
+        print("Недопустимые данные: login или amount отсутствуют")
+        return
 
     # Обновление баланса пользователя в базе данных
     conn = sqlite3.connect(DB_NAME)
