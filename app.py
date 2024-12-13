@@ -197,7 +197,7 @@ def balance():
         return "Баланс не найден"
 
     balance = result[0]
-    return render_template('template.html', balance=balance)
+    return render_template('index.html', balance=balance)
 
 @app.route('/update_balance', methods=['POST'])
 def update_balance():
