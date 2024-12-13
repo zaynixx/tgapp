@@ -172,34 +172,35 @@ def load_user(user_id):
 def index():
     return render_template('index.html')
 
-@app.route('/update_balance', methods=['POST'])
-def update_balance():
-    # Получаем данные из запроса
-    username = request.form['username']
-    amount = float(request.form['amount'])
-
-    # Проверяем, существует ли пользователь с таким логином
-    user = User.get_by_username(username)
-    if user:
-        # Обновляем баланс пользователя в базе данных
-        conn = sqlite3.connect(DB_NAME)
-        cursor = conn.cursor()
-
-        cursor.execute('''
-        UPDATE user SET balance = balance + ? WHERE username = ?
-        ''', (amount, username))
-        conn.commit()
-        conn.close()
-
-        return jsonify({"status": "success", "message": "Balance updated"})
-    else:
-        return jsonify({"status": "error", "message": "User not found"})
-
 @app.route('/buy_access/<target>', methods=['GET'])
 @login_required
 def buy_access(target):
     price = 666  # Цена для доступа
     return render_template('buy_access.html', target=target, price=price)
+
+@app.route('/update_balance', methods=['POST'])
+def update_balance():
+    user_id = request.json.get('user_id')
+    amount = request.json.get('amount')
+
+    if not user_id or not amount:
+        return jsonify({"error": "Invalid data"}), 400
+
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT * FROM user WHERE id = ?', (user_id,))
+    user_data = cursor.fetchone()
+    if not user_data:
+        return jsonify({"error": "User not found"}), 404
+
+    new_balance = user_data[6] + amount  # Предполагаем, что balance - это 7-й столбец
+    cursor.execute('UPDATE user SET balance = ? WHERE id = ?', (new_balance, user_id))
+    conn.commit()
+    conn.close()
+
+    return jsonify({"message": "Balance updated successfully"}), 200
+
 
 # Регистрация
 @app.route('/register', methods=['GET', 'POST'])
